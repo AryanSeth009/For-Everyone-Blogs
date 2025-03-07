@@ -7,10 +7,15 @@ import jwt from "jsonwebtoken";
 import cors from "cors";
 import admin from "firebase-admin";
 import { getAuth } from "firebase-admin/auth";
-
+import { fileURLToPath } from "url";
 import path from "path";
-const __dirname = path.dirname("")
-const buildPath = path.join(__dirname, "../blogging website - frontend/dist");
+
+
+
+// Correctly define __dirname in ES module
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const buildPath = path.join(__dirname, "../blogging-website-frontend/dist");
 // schema below
 import User from "./Schema/User.js";
 import Blog from "./Schema/Blog.js";
@@ -51,6 +56,7 @@ server.use(express.static(buildPath));
 server.get("/*", (req, res) => {
     res.sendFile(path.join(buildPath, "index.html"));
 });
+
 server.use(express.json());
 server.use(
   cors({
