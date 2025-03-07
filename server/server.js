@@ -8,6 +8,9 @@ import cors from "cors";
 import admin from "firebase-admin";
 import { getAuth } from "firebase-admin/auth";
 
+import path from "path";
+const __dirname = path.dirname("")
+const buildPath = path.join(__dirname, "../blogging website - frontend/dist");
 // schema below
 import User from "./Schema/User.js";
 import Blog from "./Schema/Blog.js";
@@ -43,6 +46,11 @@ admin.initializeApp({
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
+server.use(express.static(buildPath));
+
+server.get("/*", (req, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
+});
 server.use(express.json());
 server.use(
   cors({
