@@ -42,7 +42,7 @@ import Notification from "./Schema/Notification.js";
 import Comment from "./Schema/Comment.js";
 
 const server = express();
-const PORT = 5000;
+const PORT = 3000;
 
 // Initialize Firebase Admin SDK
 const serviceAccount = {
