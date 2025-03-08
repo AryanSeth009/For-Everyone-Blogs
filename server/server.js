@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import "dotenv/config";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
 import cors from "cors";
@@ -145,7 +145,7 @@ const fixUsersWithNullEmails = async () => {
 
 // Update the MongoDB connection to call this function
 mongoose
-  .connect(process.env.DB_LOCATION, {
+  .connect(process.env.DB_LOCATION || process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     autoIndex: true,
@@ -158,6 +158,7 @@ mongoose
   .catch((err) => {
     console.error("MongoDB connection error:", err);
   });
+
 
 // setting up s3 bucket
 // Make sure to import AWS and nanoid at the top of your file
