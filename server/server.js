@@ -145,7 +145,7 @@ const fixUsersWithNullEmails = async () => {
 
 // Update the MongoDB connection to call this function
 mongoose
-  .connect(process.env.DB_LOCATION || process.env.MONGO_URI, {
+  .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     autoIndex: true,
