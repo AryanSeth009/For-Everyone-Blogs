@@ -4,6 +4,13 @@
 npm uninstall bcrypt
 npm install bcryptjs@3.0.2
 
+# Make sure aws-sdk is installed
+echo "Checking if aws-sdk is installed..."
+if ! npm list aws-sdk | grep -q aws-sdk; then
+    echo "Installing aws-sdk..."
+    npm install aws-sdk@2.1432.0
+fi
+
 # Add type:module to package.json
 # Check if jq is installed, if not install it
 if ! command -v jq &> /dev/null; then

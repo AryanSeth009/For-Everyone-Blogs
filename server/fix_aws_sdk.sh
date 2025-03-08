@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Make sure aws-sdk is installed
+echo "Checking if aws-sdk is installed..."
+if ! npm list aws-sdk | grep -q aws-sdk; then
+    echo "Installing aws-sdk..."
+    npm install aws-sdk@2.1432.0
+fi
+
 # Fix aws-sdk import in server.js
 echo "Fixing aws-sdk import in server.js..."
 sed -i 's/import aws from .aws-sdk.;/import { createRequire } from \x27module\x27;\nconst require = createRequire(import.meta.url);\nconst AWS = require(\x27aws-sdk\x27);/' server.js
