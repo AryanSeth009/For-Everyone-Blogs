@@ -10,9 +10,8 @@ import { getAuth } from "firebase-admin/auth";
 import { fileURLToPath } from "url";
 import path from "path";
 
-require("dotenv").config(); // Load environment variables
+dotenv.config(); // Load environment variables
 
-const mongoose = require("mongoose");
 
 console.log("DB URI:", process.env.DB_LOCATION || process.env.MONGO_URI); // Debugging
 
