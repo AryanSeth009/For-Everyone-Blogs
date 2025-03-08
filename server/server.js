@@ -168,13 +168,16 @@ const fixUsersWithNullEmails = async () => {
 
 // setting up s3 bucket
 // Make sure to import AWS and nanoid at the top of your file
-import aws from 'aws-sdk';
+// Using dynamic import for aws-sdk to make it compatible with ES modules
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const AWS = require('aws-sdk');
 
 // Load environment variables - add this at the top of your file
 import dotenv from 'dotenv';
 dotenv.config();
 // Configure AWS S3
-const s3 = new aws.S3({
+const s3 = new AWS.S3({
   region: process.env.AWS_BUCKET_REGION,
   accessKeyId: process.env.AWS_ACCESS_KEY,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
