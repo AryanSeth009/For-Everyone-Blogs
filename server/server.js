@@ -15,7 +15,7 @@ import path from "path";
 // Correctly define __dirname in ES module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const buildPath = path.resolve(__dirname, "../blogging-website-frontend/dist");
+const buildPath = path.resolve(__dirname, "../frontend/dist");
 import User from "./Schema/User.js";
 import Blog from "./Schema/Blog.js";
 import Notification from "./Schema/Notification.js";
