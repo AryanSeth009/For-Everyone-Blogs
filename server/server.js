@@ -169,30 +169,36 @@ const fixUsersWithNullEmails = async () => {
 // setting up s3 bucket
 // Make sure to import AWS and nanoid at the top of your file
 // Using dynamic import for aws-sdk to make it compatible with ES modules
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const AWS = require('aws-sdk');
+// import { createRequire } from 'module';
+// const require = createRequire(import.meta.url);
+// const AWS = require('aws-sdk');
 
 // Load environment variables - add this at the top of your file
 import dotenv from 'dotenv';
 dotenv.config();
 // Configure AWS S3
-const s3 = new AWS.S3({
-  region: process.env.AWS_BUCKET_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-});
+// const s3 = new AWS.S3({
+//   region: process.env.AWS_BUCKET_REGION,
+//   accessKeyId: process.env.AWS_ACCESS_KEY,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+// });
 
 const generateUploadURL = async () => {
+  // Since S3 is not available, return a placeholder URL
+  console.log("S3 upload functionality is disabled");
   const date = new Date();
   const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
-
-  return await s3.getSignedUrlPromise("putObject", {
-    Bucket: process.env.AWS_BUCKET_NAME,
-    Key: imageName,
-    Expires: 1000,
-    ContentType: "image/jpeg",
-  });
+  
+  // Return a placeholder URL
+  return `/placeholder-upload-url/${imageName}`;
+  
+  // Original S3 code:
+  // return await s3.getSignedUrlPromise("putObject", {
+  //   Bucket: process.env.AWS_BUCKET_NAME,
+  //   Key: imageName,
+  //   Expires: 1000,
+  //   ContentType: "image/jpeg",
+  // });
 };
 
 // Export the function so it can be used elsewhere
