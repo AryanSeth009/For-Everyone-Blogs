@@ -10,6 +10,27 @@ import { getAuth } from "firebase-admin/auth";
 import { fileURLToPath } from "url";
 import path from "path";
 
+require("dotenv").config(); // Load environment variables
+
+const mongoose = require("mongoose");
+
+console.log("DB URI:", process.env.DB_LOCATION || process.env.MONGO_URI); // Debugging
+
+mongoose
+  .connect(process.env.DB_LOCATION || process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    autoIndex: true,
+  })
+  .then(async () => {
+    console.log("Connected to MongoDB Atlas");
+    await fixUsersWithNullEmails();
+    await fixAllBlogsAuthors();
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
+
 
 
 // Correctly define __dirname in ES module
@@ -144,20 +165,6 @@ const fixUsersWithNullEmails = async () => {
 };
 
 // Update the MongoDB connection to call this function
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    autoIndex: true,
-  })
-  .then(async () => {
-    console.log("Connected to MongoDB Atlas");
-    await fixUsersWithNullEmails();
-    await fixAllBlogsAuthors();
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-  });
 
 
 // setting up s3 bucket
