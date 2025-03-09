@@ -129,4 +129,4 @@ const userSchema = mongoose.Schema(
 
 userSchema.index({ "personal_info.email": 1 }, { unique: true });
 
-module.exports = mongoose.model("users", userSchema);
+export default mongoose.model("users", userSchema);

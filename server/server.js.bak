@@ -1,14 +1,14 @@
-const express = require("express");
-const mongoose = require("mongoose");
-require("dotenv").config();
-const bcrypt = require("bcryptjs");
-const { nanoid } = require("nanoid");
-const jwt = require("jsonwebtoken");
-const cors = require("cors");
-const admin = require("firebase-admin");
-const { getAuth } = require("firebase-admin/auth");
-const { fileURLToPath } = require("url");
-const path = require("path");
+import express from "express";
+import mongoose from "mongoose";
+import "dotenv/config";
+import bcrypt from "bcryptjs";
+import { nanoid } from "nanoid";
+import jwt from "jsonwebtoken";
+import cors from "cors";
+import admin from "firebase-admin";
+import { getAuth } from "firebase-admin/auth";
+import { fileURLToPath } from "url";
+import path from "path";
 
 dotenv.config(); // Load environment variables
 
@@ -33,12 +33,13 @@ mongoose
 
 
 // Correctly define __dirname in ES module
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const buildPath = path.resolve(__dirname, "../frontend/dist");
-const User = require("./Schema/User");
-const Blog = require("./Schema/Blog");
-const Notification = require("./Schema/Notification");
-const Comment = require("./Schema/Comment");
+import User from "./Schema/User.js";
+import Blog from "./Schema/Blog.js";
+import Notification from "./Schema/Notification.js";
+import Comment from "./Schema/Comment.js";
 
 const server = express();
 const PORT = 3000;
@@ -168,15 +169,15 @@ const fixUsersWithNullEmails = async () => {
 // setting up s3 bucket
 // Make sure to import AWS and nanoid at the top of your file
 // Using dynamic import for aws-sdk to make it compatible with ES modules
-// 
-// 
-const AWS = require('aws-sdk');
+// import { createRequire } from 'module';
+// const require = createRequire(import.meta.url);
+// const AWS = require('aws-sdk');
 
 // Load environment variables - add this at the top of your file
-const dotenv = require("dotenv");
+import dotenv from 'dotenv';
 dotenv.config();
 // Configure AWS S3
-const s3 = new AWS.S3({
+// const s3 = new AWS.S3({
 //   region: process.env.AWS_BUCKET_REGION,
 //   accessKeyId: process.env.AWS_ACCESS_KEY,
 //   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -201,7 +202,7 @@ const generateUploadURL = async () => {
 };
 
 // Export the function so it can be used elsewhere
-module.exports = { generateUploadURL, server };
+export { generateUploadURL };
 
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers["authorization"];
