@@ -9,14 +9,25 @@ fi
 
 # Fix aws-sdk import in server.js
 echo "Fixing aws-sdk import in server.js..."
-sed -i 's/import aws from .aws-sdk.;/import { createRequire } from \x27module\x27;\nconst require = createRequire(import.meta.url);\nconst AWS = require(\x27aws-sdk\x27);/' server.js
-sed -i 's/const s3 = new aws.S3/const s3 = new AWS.S3/' server.js
+# Uncomment the AWS SDK import and configuration code
+sed -i 's/\/\/ import { createRequire } from/import { createRequire } from/' server.js
+sed -i 's/\/\/ const require = createRequire/const require = createRequire/' server.js
+sed -i 's/\/\/ const AWS = require/const AWS = require/' server.js
+sed -i 's/\/\/ const s3 = new AWS.S3/const s3 = new AWS.S3/' server.js
 
-# Add AWS SDK maintenance mode suppression to .env if not already there
+# Add AWS SDK maintenance mode suppression to .env file
+echo "Adding AWS SDK maintenance mode suppression to .env..."
 if ! grep -q "AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE" .env; then
-    echo "Adding AWS SDK maintenance mode suppression to .env..."
-    echo "AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = '1'" >> .env
+    echo "AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE=1" >> .env
 fi
 
-# Restart the server using PM2
+# Update ecosystem.config.js to include the environment variable
+echo "Updating PM2 ecosystem config to include the suppression variable..."
+if ! grep -q "AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE" ecosystem.config.js; then
+    sed -i '/interpreter/a\\        env: {\n          AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE: "1"\n        },' ecosystem.config.js
+fi
+
+echo "Restarting the server with PM2..."
 pm2 restart server
+
+echo "AWS SDK fix completed successfully!"
