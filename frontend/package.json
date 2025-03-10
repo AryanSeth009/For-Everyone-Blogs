@@ -6,8 +6,8 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
-    "build": "node build.js",
-    "vercel-build": "node build.js",
+    "build": "vite build",
+    "vercel-build": "node build-simple.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

@@ -1,10 +1,15 @@
 // Simple build script to work around permission issues
-const { execSync } = require('child_process');
-const path = require('path');
-const fs = require('fs');
+import { execSync } from 'child_process';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 try {
   console.log('Starting Vite build process...');
+  
+  // Get current directory
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
   
   // Get the path to vite.js
   const vitePath = path.resolve(__dirname, 'node_modules', 'vite', 'bin', 'vite.js');
