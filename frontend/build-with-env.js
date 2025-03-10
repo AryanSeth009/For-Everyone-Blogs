@@ -37,10 +37,30 @@ process.env.VITE_SERVER_DOMAIN = 'https://for-everyone-blogs.onrender.com';
 console.log('Environment variables set:');
 console.log('VITE_SERVER_DOMAIN:', process.env.VITE_SERVER_DOMAIN);
 
-// Run the Vite build command
+// Install dependencies if needed
+try {
+  console.log('Checking for Vite installation...');
+  // First try to install only the required build dependencies
+  execSync('npm install --no-save vite @vitejs/plugin-react', { stdio: 'inherit' });
+  console.log('Build dependencies installed successfully!');
+} catch (error) {
+  console.error('Failed to install build dependencies:', error);
+  try {
+    console.log('Attempting full dependency installation...');
+    execSync('npm install', { stdio: 'inherit' });
+    console.log('Full dependency installation successful!');
+  } catch (installError) {
+    console.error('Failed to install dependencies:', installError);
+    process.exit(1);
+  }
+}
+
+// Run the Vite build command with explicit path
 try {
   console.log('Running Vite build...');
-  execSync('npx vite build', { stdio: 'inherit' });
+  // Use require.resolve to find the exact path to vite
+  const vitePath = path.join(process.cwd(), 'node_modules', 'vite', 'bin', 'vite.js');
+  execSync(`node "${vitePath}" build`, { stdio: 'inherit' });
   console.log('Build completed successfully!');
 } catch (error) {
   console.error('Build failed:', error);

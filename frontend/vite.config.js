@@ -1,6 +1,6 @@
 const { defineConfig } = require('vite');
 const react = require('@vitejs/plugin-react');
-const { resolve } = require('path');
+const path = require('path');
 
 // https://vitejs.dev/config/
 module.exports = defineConfig({
@@ -14,10 +14,14 @@ module.exports = defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html')
+        main: path.resolve(__dirname, 'index.html')
       }
     }
   },
-  // Ensure we're using relative paths for assets
-  base: './'
-})
+  base: './',
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src')
+    }
+  }
+});
