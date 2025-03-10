@@ -1,9 +1,6 @@
-// Load environment variables first
-const dotenv = require("dotenv");
-dotenv.config();
-
 const express = require("express");
 const mongoose = require("mongoose");
+require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const { nanoid } = require("nanoid");
 const jwt = require("jsonwebtoken");
@@ -12,6 +9,9 @@ const admin = require("firebase-admin");
 const { getAuth } = require("firebase-admin/auth");
 const { fileURLToPath } = require("url");
 const path = require("path");
+
+dotenv.config(); // Load environment variables
+
 
 console.log("DB URI:", process.env.DB_LOCATION || process.env.MONGO_URI); // Debugging
 
@@ -30,7 +30,10 @@ mongoose
     console.error("MongoDB connection error:", err);
   });
 
+
+
 // Correctly define __dirname in ES module
+
 const buildPath = path.resolve(__dirname, "../frontend/dist");
 const User = require("./Schema/User");
 const Blog = require("./Schema/Blog");
@@ -98,7 +101,7 @@ server.use((req, res, next) => {
 });
 
 // Add this function at the top level
-async function fixAllBlogsAuthors() {
+const fixAllBlogsAuthors = async () => {
   try {
     // Get all blogs
     const blogs = await Blog.find({});
@@ -135,7 +138,7 @@ async function fixAllBlogsAuthors() {
 };
 
 // Add this function at the top level
-async function fixUsersWithNullEmails() {
+const fixUsersWithNullEmails = async () => {
   try {
     // Find users with null emails
     const usersToFix = await User.find({
@@ -161,32 +164,36 @@ async function fixUsersWithNullEmails() {
 
 // Update the MongoDB connection to call this function
 
-// setting up s3 bucket
-// // Make sure to import AWS and nanoid at the top of your file
-// // Using dynamic import for aws-sdk to make it compatible with ES modules
-// 
-// 
-// // // // const AWS = require("aws-sdk");
 
+// setting up s3 bucket
+// Make sure to import AWS and nanoid at the top of your file
+// Using dynamic import for aws-sdk to make it compatible with ES modules
+// 
+// 
+const AWS = require('aws-sdk');
+
+// Load environment variables - add this at the top of your file
+const dotenv = require("dotenv");
+dotenv.config();
 // Configure AWS S3
-// // // // const s3 = new AWS.S3({
-// //   region: process.env.AWS_BUCKET_REGION,
-// //   accessKeyId: process.env.AWS_ACCESS_KEY,
-// //   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+const s3 = new AWS.S3({
+//   region: process.env.AWS_BUCKET_REGION,
+//   accessKeyId: process.env.AWS_ACCESS_KEY,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 // });
 
-async function generateUploadURL() {
+const generateUploadURL = async () => {
   // Since S3 is not available, return a placeholder URL
   console.log("S3 upload functionality is disabled");
   const date = new Date();
-  const imageName = nanoid() + "-" + date.getTime() + ".jpeg";
+  const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
   
   // Return a placeholder URL
-  return "/placeholder-upload-url/" + imageName;
+  return `/placeholder-upload-url/${imageName}`;
   
   // Original S3 code:
   // return await s3.getSignedUrlPromise("putObject", {
-//   //   Bucket: process.env.AWS_BUCKET_NAME,
+  //   Bucket: process.env.AWS_BUCKET_NAME,
   //   Key: imageName,
   //   Expires: 1000,
   //   ContentType: "image/jpeg",
@@ -196,11 +203,11 @@ async function generateUploadURL() {
 // Export the function so it can be used elsewhere
 module.exports = { generateUploadURL, server };
 
-function verifyJWT(req, res, next) {
+const verifyJWT = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) {
+  if (token == null) {
     return res.status(401).json({ error: "No access token" });
   }
 
@@ -211,12 +218,11 @@ function verifyJWT(req, res, next) {
 
     req.user = user.id;
     req.admin = user.admin;
-
     next();
   });
 };
 
-function formatDatatoSend(user) {
+const formatDatatoSend = (user) => {
   const access_token = jwt.sign(
     { id: user._id, admin: user.admin },
     process.env.SECRET_ACCESS_KEY
@@ -227,27 +233,30 @@ function formatDatatoSend(user) {
     profile_img: user.personal_info.profile_img,
     username: user.personal_info.username,
     fullname: user.personal_info.fullname,
+    isAdmin: user.admin,
   };
 };
 
-async function generateUsername(email) {
+const generateUsername = async (email) => {
   let username = email.split("@")[0];
 
   let isUsernameNotUnique = await User.exists({
     "personal_info.username": username,
-  });
+  }).then((result) => result);
 
-  if (isUsernameNotUnique) {
-    username += nanoid().substring(0, 5);
-  }
+  isUsernameNotUnique ? (username += nanoid().substring(0, 5)) : "";
 
   return username;
 };
 
 // upload image url route
-server.get("/get-upload-url", async (req, res) => {
-  const url = await generateUploadURL();
-  res.status(200).json({ uploadURL: url });
+server.get("/get-upload-url", (req, res) => {
+  generateUploadURL()
+    .then((url) => res.status(200).json({ uploadURL: url }))
+    .catch((err) => {
+      console.log(err.message);
+      return res.status(500).json({ error: err.message });
+    });
 });
 
 server.post("/signup", async (req, res) => {
@@ -304,7 +313,7 @@ server.post("/signup", async (req, res) => {
   }
 });
 
-server.post("/signin", async (req, res) => {
+server.post("/signin", (req, res) => {
   let { email, password } = req.body;
 
   User.findOne({ "personal_info.email": email })
@@ -399,7 +408,7 @@ server.post("/google-auth", async (req, res) => {
     });
 });
 
-server.post("/change-password", verifyJWT, async (req, res) => {
+server.post("/change-password", verifyJWT, (req, res) => {
   let { currentPassword, newPassword } = req.body;
 
   if (
@@ -549,7 +558,7 @@ server.post("/latest-blogs", async (req, res) => {
   }
 });
 
-server.post("/all-latest-blogs-count", async (req, res) => {
+server.post("/all-latest-blogs-count", (req, res) => {
   Blog.countDocuments({ draft: false })
     .then((count) => {
       return res.status(200).json({ totalDocs: count });
@@ -581,7 +590,7 @@ server.get("/trending-blogs", async (req, res) => {
   }
 });
 
-server.post("/search-blogs", async (req, res) => {
+server.post("/search-blogs", (req, res) => {
   let { tag, query, author, page, limit, eliminate_blog } = req.body;
 
   let findQuery;
@@ -613,7 +622,7 @@ server.post("/search-blogs", async (req, res) => {
     });
 });
 
-server.post("/search-blogs-count", async (req, res) => {
+server.post("/search-blogs-count", (req, res) => {
   let { tag, author, query } = req.body;
 
   let findQuery;
@@ -636,7 +645,7 @@ server.post("/search-blogs-count", async (req, res) => {
     });
 });
 
-server.post("/search-users", async (req, res) => {
+server.post("/search-users", (req, res) => {
   let { query } = req.body;
 
   User.find({ "personal_info.username": new RegExp(query, "i") })
@@ -652,7 +661,7 @@ server.post("/search-users", async (req, res) => {
     });
 });
 
-server.post("/get-profile", async (req, res) => {
+server.post("/get-profile", (req, res) => {
   let { username } = req.body;
 
   User.findOne({ "personal_info.username": username })
@@ -666,7 +675,7 @@ server.post("/get-profile", async (req, res) => {
     });
 });
 
-server.post("/update-profile-img", verifyJWT, async (req, res) => {
+server.post("/update-profile-img", verifyJWT, (req, res) => {
   let { url } = req.body;
 
   User.findOneAndUpdate({ _id: req.user }, { "personal_info.profile_img": url })
@@ -678,7 +687,7 @@ server.post("/update-profile-img", verifyJWT, async (req, res) => {
     });
 });
 
-server.post("/update-profile", verifyJWT, async (req, res) => {
+server.post("/update-profile", verifyJWT, (req, res) => {
   let { username, bio, social_links } = req.body;
 
   let bioLimit = 150;
@@ -751,7 +760,7 @@ server.post("/create-blog", verifyJWT, async (req, res) => {
 
     console.log("Creating blog with author:", {
       userId: user_id,
-      username: user.personal_info.useGGrname,
+      username: user.personal_info.username,
     });
 
     // Validate blog data...
@@ -889,7 +898,7 @@ server.post("/get-blog", async (req, res) => {
   }
 });
 
-server.post("/like-blog", verifyJWT, async (req, res) => {
+server.post("/like-blog", verifyJWT, (req, res) => {
   let user_id = req.user;
 
   let { _id, islikedByUser } = req.body;
@@ -923,7 +932,7 @@ server.post("/like-blog", verifyJWT, async (req, res) => {
   });
 });
 
-server.post("/isliked-by-user", verifyJWT, async (req, res) => {
+server.post("/isliked-by-user", verifyJWT, (req, res) => {
   let user_id = req.user;
 
   let { _id } = req.body;
@@ -937,7 +946,7 @@ server.post("/isliked-by-user", verifyJWT, async (req, res) => {
     });
 });
 
-server.post("/add-comment", verifyJWT, async (req, res) => {
+server.post("/add-comment", verifyJWT, (req, res) => {
   let user_id = req.user;
 
   let { _id, comment, blog_author, replying_to, notification_id } = req.body;
@@ -1017,7 +1026,7 @@ server.post("/add-comment", verifyJWT, async (req, res) => {
   });
 });
 
-server.post("/get-blog-comments", async (req, res) => {
+server.post("/get-blog-comments", (req, res) => {
   let { blog_id, skip } = req.body;
 
   let maxLimit = 5;
@@ -1042,7 +1051,7 @@ server.post("/get-blog-comments", async (req, res) => {
     });
 });
 
-server.post("/get-replies", async (req, res) => {
+server.post("/get-replies", (req, res) => {
   let { _id, skip } = req.body;
 
   let maxLimit = 5;
@@ -1072,7 +1081,7 @@ server.post("/get-replies", async (req, res) => {
     });
 });
 
-async function deleteComments(_id) {
+const deleteComments = (_id) => {
   Comment.findOneAndDelete({ _id })
     .then((comment) => {
       if (comment.parent) {
@@ -1080,31 +1089,25 @@ async function deleteComments(_id) {
           { _id: comment.parent },
           { $pull: { children: _id } }
         )
-          .then((data) => {
-            console.log("Comment deleted from parent");
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+          .then((data) => console.log("comment delete from parent"))
+          .catch((err) => console.log(err));
       }
 
       Notification.findOneAndDelete({ comment: _id }).then((notification) =>
-        console.log("Comment notification deleted")
+        console.log("comment notification deleted")
       );
 
       Notification.findOneAndUpdate(
         { reply: _id },
         { $unset: { reply: 1 } }
-      ).then((notification) => console.log("Reply notification deleted"));
+      ).then((notification) => console.log("reply notification deleted"));
 
       Blog.findOneAndUpdate(
         { _id: comment.blog_id },
         {
           $pull: { comments: _id },
-          $inc: {
-            "activity.total_comments": -1,
-            "activity.total_parent_comments": comment.parent ? 0 : -1,
-          },
+          $inc: { "activity.total_comments": -1 },
+          "activity.total_parent_comments": comment.parent ? 0 : -1,
         }
       ).then((blog) => {
         if (comment.children.length) {
@@ -1119,7 +1122,7 @@ async function deleteComments(_id) {
     });
 };
 
-server.post("/delete-comment", verifyJWT, async (req, res) => {
+server.post("/delete-comment", verifyJWT, (req, res) => {
   let user_id = req.user;
 
   let { _id } = req.body;
@@ -1135,7 +1138,7 @@ server.post("/delete-comment", verifyJWT, async (req, res) => {
   });
 });
 
-server.get("/new-notification", verifyJWT, async (req, res) => {
+server.get("/new-notification", verifyJWT, (req, res) => {
   let user_id = req.user;
 
   Notification.exists({
@@ -1156,7 +1159,7 @@ server.get("/new-notification", verifyJWT, async (req, res) => {
     });
 });
 
-server.post("/notifications", verifyJWT, async (req, res) => {
+server.post("/notifications", verifyJWT, (req, res) => {
   let user_id = req.user;
 
   let { page, filter, deletedDocCount } = req.body;
@@ -1202,7 +1205,7 @@ server.post("/notifications", verifyJWT, async (req, res) => {
     });
 });
 
-server.post("/all-notifications-count", verifyJWT, async (req, res) => {
+server.post("/all-notifications-count", verifyJWT, (req, res) => {
   let user_id = req.user;
 
   let { filter } = req.body;
@@ -1222,7 +1225,7 @@ server.post("/all-notifications-count", verifyJWT, async (req, res) => {
     });
 });
 
-server.post("/user-written-blogs", verifyJWT, async (req, res) => {
+server.post("/user-written-blogs", verifyJWT, (req, res) => {
   let user_id = req.user;
 
   let { page, draft, query, deletedDocCount } = req.body;
@@ -1247,7 +1250,7 @@ server.post("/user-written-blogs", verifyJWT, async (req, res) => {
     });
 });
 
-server.post("/user-written-blogs-count", verifyJWT, async (req, res) => {
+server.post("/user-written-blogs-count", verifyJWT, (req, res) => {
   let user_id = req.user;
 
   let { draft, query } = req.body;
@@ -1512,7 +1515,7 @@ server.get("/fix-blog-authors", async (req, res) => {
       updatedCount: result.modifiedCount,
       blogs: blogs.map((blog) => ({
         title: blog.title,
-        author: blog.author.personal_info,
+        author: blog.author?.personal_info,
       })),
     });
   } catch (err) {
@@ -1629,66 +1632,43 @@ server.post("/create-org-authors", async (req, res) => {
 
 server.post("/fix-blog-relationships", async (req, res) => {
   try {
-    // List of blog IDs and author usernames
-    const blogAuthors = [
-      {
-        blog_id: "geeksforgeeks-1",
-        author_username: "geeksforgeeks",
+    const { blog_id, author_username } = req.body;
+
+    // Find the user
+    const user = await User.findOne({
+      "personal_info.username": author_username,
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the blog
+    const blog = await Blog.findOne({ blog_id });
+    if (!blog) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
+
+    // Update blog's author
+    blog.author = user._id;
+    await blog.save();
+
+    // Add blog to user's blogs array if not already there
+    if (!user.blogs.includes(blog._id)) {
+      user.blogs.push(blog._id);
+      await user.save();
+    }
+
+    return res.json({
+      message: "Blog relationships fixed",
+      blog: {
+        title: blog.title,
+        author: {
+          username: user.personal_info.username,
+          fullname: user.personal_info.fullname,
+        },
       },
-      {
-        blog_id: "freecodecamp-1",
-        author_username: "freecodecamp",
-      },
-      {
-        blog_id: "socialmediaexaminer-1",
-        author_username: "socialmediaexaminer",
-      },
-      {
-        blog_id: "nomadicmatt-1",
-        author_username: "nomadicmatt",
-      },
-    ];
-
-    // Update blog relationships
-    await Promise.all(
-      blogAuthors.map(async (blogAuthor) => {
-        // Find the user
-        const user = await User.findOne({
-          "personal_info.username": blogAuthor.author_username,
-        });
-
-        if (!user) {
-          return res.status(404).json({ error: "User not found" });
-        }
-
-        // Find the blog
-        const blog = await Blog.findOne({ blog_id: blogAuthor.blog_id });
-        if (!blog) {
-          return res.status(404).json({ error: "Blog not found" });
-        }
-
-        // Update blog's author
-        blog.author = user._id;
-        await blog.save();
-
-        // Add blog to user's blogs array if not already there
-        if (!user.blogs.includes(blog._id)) {
-          user.blogs.push(blog._id);
-          await user.save();
-        }
-
-        return res.json({
-          message: "Blog relationships fixed",
-          blog: {
-            title: blog.title,
-            author: {
-              username: user.personal_info.username,
-              fullname: user.personal_info.fullname,
-            },
-          },
-        });
-      })
-    );
+    });
   } catch (err) {
     console.error("Error fixing blog relationships:", err);
     return res.status(500).json({ error: err.message });

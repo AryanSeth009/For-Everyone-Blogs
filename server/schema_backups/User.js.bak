@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from "mongoose";
 
 let profile_imgs_name_list = [
   "Garfield",
@@ -29,7 +28,7 @@ let profile_imgs_collections_list = [
   "fun-emoji",
 ];
 
-const userSchema = new Schema(
+const userSchema = mongoose.Schema(
   {
     personal_info: {
       fullname: {
