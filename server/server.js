@@ -38,7 +38,7 @@ const Notification = require("./Schema/Notification");
 const Comment = require("./Schema/Comment");
 
 const server = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Initialize Firebase Admin SDK
 const serviceAccount = {
@@ -73,12 +73,14 @@ server.get("/*", (req, res) => {
 });
 
 server.use(express.json());
+
+// CORS configuration
 server.use(
   cors({
-    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: process.env.NODE_ENV === "production" 
+      ? [process.env.FRONTEND_URL, "https://for-everyone-blogs.vercel.app"] 
+      : ["http://localhost:3000", "http://127.0.0.1:3000"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
