@@ -37,30 +37,22 @@ process.env.VITE_SERVER_DOMAIN = 'https://for-everyone-blogs.onrender.com';
 console.log('Environment variables set:');
 console.log('VITE_SERVER_DOMAIN:', process.env.VITE_SERVER_DOMAIN);
 
-// Install dependencies if needed
+// Run the build process
 try {
-  console.log('Checking for Vite installation...');
-  // First try to install only the required build dependencies
-  execSync('npm install --no-save vite @vitejs/plugin-react', { stdio: 'inherit' });
-  console.log('Build dependencies installed successfully!');
-} catch (error) {
-  console.error('Failed to install build dependencies:', error);
-  try {
-    console.log('Attempting full dependency installation...');
-    execSync('npm install', { stdio: 'inherit' });
-    console.log('Full dependency installation successful!');
-  } catch (installError) {
-    console.error('Failed to install dependencies:', installError);
-    process.exit(1);
-  }
-}
+  // Install dependencies with exact paths
+  console.log('Installing dependencies...');
+  execSync('npm install --save-dev vite@4.5.9 @vitejs/plugin-react@4.0.3', { stdio: 'inherit' });
+  console.log('Dependencies installed successfully!');
 
-// Run the Vite build command with explicit path
-try {
+  // Run the build command using npx to ensure we use the local installation
   console.log('Running Vite build...');
-  // Use require.resolve to find the exact path to vite
-  const vitePath = path.join(process.cwd(), 'node_modules', 'vite', 'bin', 'vite.js');
-  execSync(`node "${vitePath}" build`, { stdio: 'inherit' });
+  execSync('npx --no vite build', { 
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      NODE_ENV: 'production'
+    }
+  });
   console.log('Build completed successfully!');
 } catch (error) {
   console.error('Build failed:', error);

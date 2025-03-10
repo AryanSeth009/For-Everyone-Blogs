@@ -6,10 +6,10 @@
     "install:frontend": "cd frontend && npm install",
     "install:server": "cd server && npm install",
     "install:all": "npm run install:frontend && npm run install:server",
-    "build:frontend": "cd frontend && npm install && npm run build",
+    "build:frontend": "cd frontend && npm install --include=dev && npm run build",
     "build:server": "cd server && npm install",
     "build": "npm run build:frontend",
-    "vercel-build": "cd frontend && npm install --include=dev && npm run build",
+    "vercel-build": "npm run build:frontend",
     "start:frontend": "cd frontend && npm start",
     "start:server": "cd server && npm start",
     "dev:frontend": "cd frontend && npm run dev",
@@ -18,5 +18,9 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "vite": "^4.5.9",
+    "@vitejs/plugin-react": "^4.0.3"
+  }
 }
