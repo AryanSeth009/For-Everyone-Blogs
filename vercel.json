@@ -1,35 +1,10 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "server/vercel.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "server/vercel.js"
-    },
-    {
-      "src": "/(latest-blogs|trending-blogs|search-blogs|get-blog|get-profile|get-upload-url|user-written-blogs|notifications|search-users|update-profile|update-profile-img|change-password|add-comment|delete-comment|like-blog|isliked-by-user|create-blog|delete-blog|new-notification|get-blog-comments)(.*)",
-      "dest": "server/vercel.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "frontend/dist/$1",
-      "continue": true
-    },
-    {
-      "src": "/(.*)",
-      "dest": "frontend/dist/index.html"
-    }
+  "buildCommand": "npm run build",
+  "outputDirectory": "frontend/dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/server/vercel.js" },
+    { "source": "/(latest-blogs|trending-blogs|search-blogs|get-blog|get-profile|get-upload-url|user-written-blogs|notifications|search-users|update-profile|update-profile-img|change-password|add-comment|delete-comment|like-blog|isliked-by-user|create-blog|delete-blog|new-notification|get-blog-comments)(.*)", "destination": "/server/vercel.js" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

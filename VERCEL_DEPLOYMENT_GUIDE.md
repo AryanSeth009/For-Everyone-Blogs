@@ -15,38 +15,13 @@ Ensure your project has the following configuration files:
 1. **Root `vercel.json`**:
    ```json
    {
-     "version": 2,
-     "builds": [
-       {
-         "src": "server/vercel.js",
-         "use": "@vercel/node"
-       },
-       {
-         "src": "frontend/package.json",
-         "use": "@vercel/static-build",
-         "config": {
-           "distDir": "dist"
-         }
-       }
-     ],
-     "routes": [
-       {
-         "src": "/api/(.*)",
-         "dest": "server/vercel.js"
-       },
-       {
-         "src": "/(latest-blogs|trending-blogs|search-blogs|get-blog|get-profile|get-upload-url|user-written-blogs|notifications|search-users|update-profile|update-profile-img|change-password|add-comment|delete-comment|like-blog|isliked-by-user|create-blog|delete-blog|new-notification|get-blog-comments)(.*)",
-         "dest": "server/vercel.js"
-       },
-       {
-         "src": "/(.*)",
-         "dest": "frontend/dist/$1",
-         "continue": true
-       },
-       {
-         "src": "/(.*)",
-         "dest": "frontend/dist/index.html"
-       }
+     "buildCommand": "npm run build",
+     "outputDirectory": "frontend/dist",
+     "framework": "vite",
+     "rewrites": [
+       { "source": "/api/(.*)", "destination": "/server/vercel.js" },
+       { "source": "/(latest-blogs|trending-blogs|search-blogs|get-blog|get-profile|get-upload-url|user-written-blogs|notifications|search-users|update-profile|update-profile-img|change-password|add-comment|delete-comment|like-blog|isliked-by-user|create-blog|delete-blog|new-notification|get-blog-comments)(.*)", "destination": "/server/vercel.js" },
+       { "source": "/(.*)", "destination": "/index.html" }
      ]
    }
    ```
@@ -72,7 +47,7 @@ Ensure your project has the following configuration files:
 3. Click "Add New" > "Project"
 4. Import your Git repository
 5. Configure the project:
-   - Framework Preset: Other
+   - Framework Preset: Vite
    - Root Directory: ./
    - Build Command: npm run build
    - Output Directory: frontend/dist
@@ -96,6 +71,14 @@ After setting the environment variables, trigger a new deployment:
 2. Click "Redeploy" on your latest deployment
 
 ## Troubleshooting
+
+### 404 Not Found Errors
+
+If you're seeing 404 errors for the main page:
+
+1. Check that the `outputDirectory` in vercel.json is set to `frontend/dist`
+2. Verify that the build process is correctly generating files in the frontend/dist directory
+3. Make sure the rewrites in vercel.json are correctly configured
 
 ### API Connection Issues
 
@@ -131,3 +114,4 @@ npm run dev:server
 1. The server must export the Express app directly, not as a property of an object
 2. All API routes must be explicitly listed in the vercel.json file
 3. The frontend must use the correct server domain in production
+4. Vercel's built-in Vite framework detection works best with a simpler configuration
