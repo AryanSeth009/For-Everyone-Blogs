@@ -1,8 +1,8 @@
 {
-  "version": 2,
-  "buildCommand": "cd frontend && node build.js",
-  "installCommand": "npm run install:all",
+  "buildCommand": "npm run vercel-build",
+  "installCommand": "npm install",
   "outputDirectory": "frontend/dist",
+  "framework": "vite",
   "rewrites": [
     {
       "source": "/api/(.*)",
