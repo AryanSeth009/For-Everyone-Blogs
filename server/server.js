@@ -81,7 +81,8 @@ server.use((req, res, next) => {
     process.env.FRONTEND_URL, 
     "https://for-everyone-blogs.vercel.app",
     "http://localhost:3000",
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://for-everyone-blogs.onrender.com/"
   ];
   
   const origin = req.headers.origin;
