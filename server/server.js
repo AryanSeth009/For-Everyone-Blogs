@@ -75,45 +75,53 @@ server.get("/*", (req, res) => {
 // CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) {
-      return callback(null, true);
-    }
-
     const allowedOrigins = [
+      process.env.FRONTEND_URL || 'https://for-everyone-blogs.vercel.app',
       'https://for-everyone-blogs.vercel.app',
+      'https://for-everyone-blogs.onrender.com',
       'http://localhost:3000',
       'http://localhost:5173'
-    ];
+    ].filter(Boolean); // Remove any undefined values
 
-    if (allowedOrigins.includes(origin)) {
+    console.log('Incoming request from origin:', origin);
+    console.log('Allowed origins:', allowedOrigins);
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      // Set the specific origin that matched
+      const allowedOrigin = origin || allowedOrigins[0];
       callback(null, true);
     } else {
-      console.log('Request from origin:', origin);
-      // In production, we should be strict about CORS
-      // For now, allowing all origins to debug the issue
-      callback(null, true);
+      console.log('Origin not allowed:', origin);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: 'GET,POST,PUT,DELETE,OPTIONS',
-  allowedHeaders: 'Content-Type,Authorization,X-Requested-With',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Access-Control-Allow-Origin'],
   preflightContinue: false,
   optionsSuccessStatus: 204
 };
 
-// Apply CORS middleware
+// Apply CORS middleware before any routes
 server.use(cors(corsOptions));
 
-// Handle preflight requests
+// Handle preflight requests explicitly
 server.options('*', cors(corsOptions));
 
 // Parse JSON bodies
 server.use(express.json());
 
+// Add health check endpoint
+server.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", env: process.env.NODE_ENV });
+});
+
 // Add trending-blogs endpoint with proper error handling
 server.get("/trending-blogs", async (req, res) => {
-    console.log("Received request for trending blogs");
+    const origin = req.headers.origin;
+    console.log("Received request for trending blogs from origin:", origin);
+    
     try {
         const trendingBlogs = await Blog.find({ draft: false })
             .sort({ "activity.total_reads": -1, "activity.total_likes": -1, publishedAt: -1 })
@@ -122,6 +130,7 @@ server.get("/trending-blogs", async (req, res) => {
             .lean();
 
         if (!trendingBlogs) {
+            console.log("No trending blogs found");
             return res.status(200).json({ 
                 blogs: [],
                 totalDocs: 0,
@@ -1383,8 +1392,7 @@ server.get("/debug-fix-authors", async (req, res) => {
     const verifyBlogs = await Blog.find({})
       .populate({
         path: "author",
-        select:
-          "personal_info.fullname personal_info.username personal_info.profile_img",
+        select: "personal_info.fullname personal_info.username personal_info.profile_img",
       })
       .lean();
 
