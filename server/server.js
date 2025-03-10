@@ -79,7 +79,7 @@ server.use(
   cors({
     origin: process.env.NODE_ENV === "production" 
       ? [process.env.FRONTEND_URL, "https://for-everyone-blogs.vercel.app"] 
-      : ["http://localhost:3000", "http://127.0.0.1:3000"],
+      : ["http://localhost:3000", "http://127.0.0.1:3000", "https://for-everyone-blogs.vercel.app"],
     credentials: true,
   })
 );
