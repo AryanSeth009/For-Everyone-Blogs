@@ -558,35 +558,37 @@ server.all("/trending-blogs", async (req, res) => {
 });
 
 server.post("/search-blogs", async (req, res) => {
-  let { tag, query, author, page, limit, eliminate_blog } = req.body;
+    console.log(`Received POST request to /search-blogs`);
+    console.log('Request body:', req.body);
+    let { tag, query, author, page, limit, eliminate_blog } = req.body;
 
-  let findQuery;
+    let findQuery;
 
-  if (tag) {
-    findQuery = { tags: tag, draft: false, blog_id: { $ne: eliminate_blog } };
-  } else if (query) {
-    findQuery = { draft: false, title: new RegExp(query, "i") };
-  } else if (author) {
-    findQuery = { author, draft: false };
-  }
+    if (tag) {
+      findQuery = { tags: tag, draft: false, blog_id: { $ne: eliminate_blog } };
+    } else if (query) {
+      findQuery = { draft: false, title: new RegExp(query, "i") };
+    } else if (author) {
+      findQuery = { author, draft: false };
+    }
 
-  let maxLimit = limit ? limit : 2;
+    let maxLimit = limit ? limit : 2;
 
-  Blog.find(findQuery)
-    .populate(
-      "author",
-      "personal_info.profile_img personal_info.username personal_info.fullname -_id"
-    )
-    .sort({ publishedAt: -1 })
-    .select("blog_id title des banner activity tags publishedAt -_id")
-    .skip((page - 1) * maxLimit)
-    .limit(maxLimit)
-    .then((blogs) => {
-      return res.status(200).json({ blogs });
-    })
-    .catch((err) => {
-      return res.status(500).json({ error: err.message });
-    });
+    Blog.find(findQuery)
+      .populate(
+        "author",
+        "personal_info.profile_img personal_info.username personal_info.fullname -_id"
+      )
+      .sort({ publishedAt: -1 })
+      .select("blog_id title des banner activity tags publishedAt -_id")
+      .skip((page - 1) * maxLimit)
+      .limit(maxLimit)
+      .then((blogs) => {
+        return res.status(200).json({ blogs });
+      })
+      .catch((err) => {
+        return res.status(500).json({ error: err.message });
+      });
 });
 
 server.post("/search-blogs-count", async (req, res) => {
