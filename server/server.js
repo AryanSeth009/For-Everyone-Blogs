@@ -491,68 +491,70 @@ server.post("/change-password", verifyJWT, async (req, res) => {
 });
 
 server.all("/latest-blogs", async (req, res) => {
-    try {
-        // Get page from either query params (GET) or request body (POST)
-        let { page = 1 } = req.method === 'POST' ? req.body : req.query;
-        page = parseInt(page);
-        
-        const maxLimit = 5;
-        const skipCount = (page - 1) * maxLimit;
+  console.log(`Received ${req.method} request to /latest-blogs`);
+  console.log('Request body:', req.body);
+  try {
+    // Get page from either query params (GET) or request body (POST)
+    let { page = 1 } = req.method === 'POST' ? req.body : req.query;
+    page = parseInt(page);
+    
+    const maxLimit = 5;
+    const skipCount = (page - 1) * maxLimit;
 
-        // Log request details
-        console.log(`Processing ${req.method} request to /latest-blogs with page: ${page}`);
-        
-        // Get total document count
-        const totalDocs = await Blog.countDocuments({ draft: false });
-        
-        // Get blogs with pagination
-        const blogs = await Blog.find({ draft: false })
-            .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
-            .sort({ publishedAt: -1 })
-            .skip(skipCount)
-            .limit(maxLimit)
-            .select("blog_id title description content banner activity tags publishedAt author");
-        
-        console.log(`Found ${blogs.length} blogs for page ${page}`);
-        
-        // Return response
-        return res.status(200).json({ 
-            blogs, 
-            totalDocs,
-            page,
-            hasMore: totalDocs > skipCount + blogs.length
-        });
-    } catch (err) {
-        console.error("Error in latest-blogs:", err);
-        return res.status(500).json({ error: err.message });
-    }
+    // Log request details
+    console.log(`Processing ${req.method} request to /latest-blogs with page: ${page}`);
+    
+    // Get total document count
+    const totalDocs = await Blog.countDocuments({ draft: false });
+    
+    // Get blogs with pagination
+    const blogs = await Blog.find({ draft: false })
+        .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
+        .sort({ publishedAt: -1 })
+        .skip(skipCount)
+        .limit(maxLimit)
+        .select("blog_id title description content banner activity tags publishedAt author");
+    
+    console.log(`Found ${blogs.length} blogs for page ${page}`);
+    
+    // Return response
+    return res.status(200).json({ 
+        blogs, 
+        totalDocs,
+        page,
+        hasMore: totalDocs > skipCount + blogs.length
+    });
+  } catch (err) {
+    console.error("Error in latest-blogs:", err);
+    return res.status(500).json({ error: err.message });
+  }
 });
 
 server.all("/all-latest-blogs-count", async (req, res) => {
-    try {
-        const totalDocs = await Blog.countDocuments({ draft: false });
-        return res.status(200).json({ totalDocs });
-    } catch (err) {
-        console.error("Error in all-latest-blogs-count:", err);
-        return res.status(500).json({ error: err.message });
-    }
+  try {
+    const totalDocs = await Blog.countDocuments({ draft: false });
+    return res.status(200).json({ totalDocs });
+  } catch (err) {
+    console.error("Error in all-latest-blogs-count:", err);
+    return res.status(500).json({ error: err.message });
+  }
 });
 
 server.all("/trending-blogs", async (req, res) => {
-    try {
-        const trendingBlogs = await Blog.find({ draft: false })
-            .sort({ "activity.total_reads": -1, "activity.total_likes": -1, publishedAt: -1 })
-            .select("title banner activity tags publishedAt blog_id author.personal_info.fullname author.personal_info.username author.personal_info.profile_img")
-            .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
-            .limit(5)
-            .lean();
+  try {
+    const trendingBlogs = await Blog.find({ draft: false })
+        .sort({ "activity.total_reads": -1, "activity.total_likes": -1, publishedAt: -1 })
+        .select("title banner activity tags publishedAt blog_id author.personal_info.fullname author.personal_info.username author.personal_info.profile_img")
+        .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
+        .limit(5)
+        .lean();
 
-        console.log("Trending blogs response:", { blogs: trendingBlogs });
-        return res.status(200).json({ blogs: trendingBlogs });
-    } catch (err) {
-        console.error("Error in trending-blogs:", err);
-        return res.status(500).json({ error: err.message });
-    }
+    console.log("Trending blogs response:", { blogs: trendingBlogs });
+    return res.status(200).json({ blogs: trendingBlogs });
+  } catch (err) {
+    console.error("Error in trending-blogs:", err);
+    return res.status(500).json({ error: err.message });
+  }
 });
 
 server.post("/search-blogs", async (req, res) => {
