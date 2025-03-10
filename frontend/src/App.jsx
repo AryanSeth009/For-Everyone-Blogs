@@ -14,6 +14,7 @@ import ChangePassword from "./pages/change-password.page";
 import EditProfile from "./pages/edit-profile.page";
 import Notifications from "./pages/notifications.page";
 import ManageBlogs from "./pages/manage-blogs.page";
+import DebugEnv from "./debug-env";
 
 export const UserContext = createContext({})
 
@@ -74,6 +75,7 @@ const App = () => {
                         <Route path="blog/:blog_id" element={<BlogPage />} />
                         <Route path="*" element={<PageNotFound />} /> 
                     </Routes>
+                    <DebugEnv />
                 </UserContext.Provider>
             </ThemeContext.Provider>
   

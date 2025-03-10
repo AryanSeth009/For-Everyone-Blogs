@@ -80,6 +80,7 @@ server.use((req, res, next) => {
   const allowedOrigins = [
     process.env.FRONTEND_URL, 
     "https://for-everyone-blogs.vercel.app",
+    "http://localhost:3000",
     "http://localhost:5173"
   ];
   
@@ -489,123 +490,69 @@ server.post("/change-password", verifyJWT, async (req, res) => {
     });
 });
 
-server.post("/latest-blogs", async (req, res) => {
-  try {
-    let { page } = req.body;
-    let maxLimit = 5;
-    let skipDocs = (page - 1) * maxLimit;
+server.all("/latest-blogs", async (req, res) => {
+    try {
+        // Get page from either query params (GET) or request body (POST)
+        let { page = 1 } = req.method === 'POST' ? req.body : req.query;
+        page = parseInt(page);
+        
+        const maxLimit = 5;
+        const skipCount = (page - 1) * maxLimit;
 
-    // Get blogs with populated author data
-    const blogs = await Blog.find({ draft: false })
-      .populate({
-        path: "author",
-        model: "users",
-        select:
-          "personal_info.fullname personal_info.username personal_info.profile_img",
-      })
-      .sort({ publishedAt: -1 })
-      .skip(skipDocs)
-      .limit(maxLimit)
-      .lean();
-
-    // Debug log
-    console.log(
-      "Raw blogs from database:",
-      blogs.map((blog) => ({
-        title: blog.title,
-        authorId: blog.author?._id,
-        authorInfo: blog.author?.personal_info,
-      }))
-    );
-
-    // Process blogs to ensure they have valid author data
-    const processedBlogs = await Promise.all(
-      blogs.map(async (blog) => {
-        // If blog has no author, try to find the original author
-        if (!blog.author) {
-          const originalAuthor = await User.findOne({ blogs: blog._id })
-            .select("personal_info")
-            .lean();
-
-          if (originalAuthor) {
-            blog.author = {
-              _id: originalAuthor._id,
-              personal_info: originalAuthor.personal_info,
-            };
-          } else {
-            // If no author found, set default author info
-            blog.author = {
-              personal_info: {
-                fullname: "Blog Author",
-                username: blog.title.toLowerCase().replace(/\s+/g, "-"),
-                profile_img:
-                  "https://png.pngtree.com/png-vector/20191009/ourmid/pngtree-user-icon-png-image_1796659.jpg",
-              },
-            };
-          }
-        }
-
-        // Ensure author has valid personal_info
-        if (!blog.author.personal_info) {
-          const user = await User.findById(blog.author)
-            .select("personal_info")
-            .lean();
-
-          if (user) {
-            blog.author.personal_info = user.personal_info;
-          }
-        }
-
-        return blog;
-      })
-    );
-
-    // Debug log
-    console.log(
-      "Processed blogs:",
-      processedBlogs.map((blog) => ({
-        title: blog.title,
-        author: blog.author?.personal_info,
-      }))
-    );
-
-    return res.status(200).json({ blogs: processedBlogs });
-  } catch (err) {
-    console.error("Error in latest-blogs:", err);
-    return res.status(500).json({ error: err.message });
-  }
+        // Log request details
+        console.log(`Processing ${req.method} request to /latest-blogs with page: ${page}`);
+        
+        // Get total document count
+        const totalDocs = await Blog.countDocuments({ draft: false });
+        
+        // Get blogs with pagination
+        const blogs = await Blog.find({ draft: false })
+            .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
+            .sort({ publishedAt: -1 })
+            .skip(skipCount)
+            .limit(maxLimit)
+            .select("blog_id title description content banner activity tags publishedAt author");
+        
+        console.log(`Found ${blogs.length} blogs for page ${page}`);
+        
+        // Return response
+        return res.status(200).json({ 
+            blogs, 
+            totalDocs,
+            page,
+            hasMore: totalDocs > skipCount + blogs.length
+        });
+    } catch (err) {
+        console.error("Error in latest-blogs:", err);
+        return res.status(500).json({ error: err.message });
+    }
 });
 
-server.post("/all-latest-blogs-count", async (req, res) => {
-  Blog.countDocuments({ draft: false })
-    .then((count) => {
-      return res.status(200).json({ totalDocs: count });
-    })
-    .catch((err) => {
-      console.log(err.message);
-      return res.status(500).json({ error: err.message });
-    });
+server.all("/all-latest-blogs-count", async (req, res) => {
+    try {
+        const totalDocs = await Blog.countDocuments({ draft: false });
+        return res.status(200).json({ totalDocs });
+    } catch (err) {
+        console.error("Error in all-latest-blogs-count:", err);
+        return res.status(500).json({ error: err.message });
+    }
 });
 
-server.get("/trending-blogs", async (req, res) => {
-  try {
-    const blogs = await Blog.find({ draft: false })
-      .populate(
-        "author",
-        "personal_info.profile_img personal_info.username personal_info.fullname -_id"
-      )
-      .sort({
-        "activity.total_read": -1,
-        "activity.total_likes": -1,
-        publishedAt: -1,
-      })
-      .select("blog_id title publishedAt -_id")
-      .limit(5);
+server.all("/trending-blogs", async (req, res) => {
+    try {
+        const trendingBlogs = await Blog.find({ draft: false })
+            .sort({ "activity.total_reads": -1, "activity.total_likes": -1, publishedAt: -1 })
+            .select("title banner activity tags publishedAt blog_id author.personal_info.fullname author.personal_info.username author.personal_info.profile_img")
+            .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
+            .limit(5)
+            .lean();
 
-    res.status(200).json({ blogs });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+        console.log("Trending blogs response:", { blogs: trendingBlogs });
+        return res.status(200).json({ blogs: trendingBlogs });
+    } catch (err) {
+        console.error("Error in trending-blogs:", err);
+        return res.status(500).json({ error: err.message });
+    }
 });
 
 server.post("/search-blogs", async (req, res) => {

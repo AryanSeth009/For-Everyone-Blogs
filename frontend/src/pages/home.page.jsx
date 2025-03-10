@@ -6,8 +6,9 @@ import Loader from "../components/loader.component";
 import BlogPostCard from "../components/blog-post.component";
 import MinimalBlogPost from "../components/nobanner-blog-post.component";
 import NoDataMessage from "../components/nodata.component";
-import { filterPaginationData } from "../common/filter-pagination-data";
 import LoadMoreDataBtn from "../components/load-more.component";
+import { filterPaginationData } from "../common/filter-pagination-data";
+import { getApiDomain } from "../api-config";
 
 const HomePage = () => {
   const [blogs, setBlogs] = useState(null);
@@ -30,7 +31,7 @@ const HomePage = () => {
   const fetchLatestBlogs = async (page = 1) => {
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_SERVER_DOMAIN}/latest-blogs`,
+        `${getApiDomain()}/latest-blogs`,
         { page }
       );
 
@@ -67,7 +68,7 @@ const HomePage = () => {
   const fetchBlogsByCategory = async (page = 1) => {
     try {
       const { data } = await axios.post(
-        `${import.meta.env.VITE_SERVER_DOMAIN}/search-blogs`,
+        `${getApiDomain()}/search-blogs`,
         { tag: pageState, page }
       );
 
@@ -105,7 +106,7 @@ const HomePage = () => {
   const fetchTrendingBlogs = async () => {
     try {
       const { data } = await axios.get(
-        `${import.meta.env.VITE_SERVER_DOMAIN}/trending-blogs`
+        `${getApiDomain()}/trending-blogs`
       );
 
       if (!data?.blogs) {

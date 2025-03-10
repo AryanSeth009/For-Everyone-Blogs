@@ -72,6 +72,70 @@ After setting the environment variables, trigger a new deployment:
 
 ## Troubleshooting
 
+### CORS and HTTP Method Issues
+
+If you're seeing CORS errors like:
+
+```
+Access to XMLHttpRequest at 'https://your-app.vercel.app/latest-blogs' from origin 'https://for-everyone-blogs.vercel.app' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+```
+
+This indicates there are issues with either:
+
+1. **Incorrect API URL**: The frontend is trying to access a placeholder URL instead of your actual Vercel domain. Check:
+   - `.env.production` file to ensure it has `VITE_SERVER_DOMAIN=https://for-everyone-blogs.vercel.app`
+   - Make sure this file is included in your deployment
+   - Consider using a centralized API config file (like `api-config.js`) to manage the API domain
+
+2. **HTTP Method Mismatch**: The frontend is using a different HTTP method than what the server expects. For example:
+   - Server defines endpoint with `server.post("/latest-blogs")` but frontend uses `axios.get()`
+   - Fix by either updating the frontend to use the correct method or making the server accept both methods with `server.all()`
+
+3. **CORS Configuration**: Make sure your server has proper CORS configuration:
+   ```javascript
+   // In server.js
+   server.use((req, res, next) => {
+     const allowedOrigins = [
+       process.env.FRONTEND_URL, 
+       "https://for-everyone-blogs.vercel.app",
+       "http://localhost:5173"
+     ];
+     
+     const origin = req.headers.origin;
+     
+     if (allowedOrigins.includes(origin)) {
+       res.setHeader("Access-Control-Allow-Origin", origin);
+     } else {
+       res.setHeader("Access-Control-Allow-Origin", "*");
+     }
+     
+     res.setHeader("Access-Control-Allow-Credentials", "true");
+     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+     res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+     
+     if (req.method === "OPTIONS") {
+       return res.status(200).end();
+     }
+     
+     next();
+   });
+   ```
+
+4. **Vercel Headers Configuration**: In your `vercel.json`, add headers configuration:
+   ```json
+   "headers": [
+     {
+       "source": "/(.*)",
+       "headers": [
+         { "key": "Access-Control-Allow-Credentials", "value": "true" },
+         { "key": "Access-Control-Allow-Origin", "value": "*" },
+         { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+         { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" }
+       ]
+     }
+   ]
+   ```
+
 ### 405 Method Not Allowed Errors
 
 If you're seeing "405 Method Not Allowed" errors when accessing API endpoints:
