@@ -72,40 +72,75 @@ server.get("/*", (req, res) => {
     res.sendFile(path.join(buildPath, "index.html"));
 });
 
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    const allowedOrigins = [
+      'https://for-everyone-blogs.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:5173'
+    ];
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('Request from origin:', origin);
+      // In production, we should be strict about CORS
+      // For now, allowing all origins to debug the issue
+      callback(null, true);
+    }
+  },
+  credentials: true,
+  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+  allowedHeaders: 'Content-Type,Authorization,X-Requested-With',
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+// Apply CORS middleware
+server.use(cors(corsOptions));
+
+// Handle preflight requests
+server.options('*', cors(corsOptions));
+
+// Parse JSON bodies
 server.use(express.json());
 
-// CORS configuration
-server.use((req, res, next) => {
-  const allowedOrigins = [
-    process.env.FRONTEND_URL,
-    "https://for-everyone-blogs.vercel.app",
-    "http://localhost:3000",
-    "http://localhost:5173",
-  ];
+// Add trending-blogs endpoint with proper error handling
+server.get("/trending-blogs", async (req, res) => {
+    console.log("Received request for trending blogs");
+    try {
+        const trendingBlogs = await Blog.find({ draft: false })
+            .sort({ "activity.total_reads": -1, "activity.total_likes": -1, publishedAt: -1 })
+            .limit(5)
+            .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
+            .lean();
 
-  const origin = req.headers.origin;
+        if (!trendingBlogs) {
+            return res.status(200).json({ 
+                blogs: [],
+                totalDocs: 0,
+                page: 1,
+                hasMore: false
+            });
+        }
 
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-    res.setHeader("Access-Control-Allow-Origin", origin || "*");
-  }
-
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  next();
-});
-
-
-// Add OPTIONS handling for preflight requests
-server.options('*', (req, res) => {
-  res.status(200).end();
+        console.log("Sending trending blogs response:", { count: trendingBlogs.length });
+        return res.status(200).json({ 
+            blogs: trendingBlogs,
+            totalDocs: trendingBlogs.length,
+            page: 1,
+            hasMore: false
+        });
+    } catch (err) {
+        console.error("Error in trending-blogs:", err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 // Comprehensive logging middleware
@@ -578,7 +613,7 @@ server.post("/search-blogs", async (req, res) => {
         "personal_info.profile_img personal_info.username personal_info.fullname -_id"
       )
       .sort({ publishedAt: -1 })
-      .select("blog_id title des banner activity tags publishedAt -_id")
+      .select("blog_id title des banner activity tags publishedAt -_id ")
       .skip((page - 1) * maxLimit)
       .limit(maxLimit)
       .then((blogs) => {
