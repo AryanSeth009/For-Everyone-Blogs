@@ -76,35 +76,32 @@ server.use(express.json());
 
 // CORS configuration
 server.use((req, res, next) => {
-  // Allow requests from any origin in development
   const allowedOrigins = [
-    process.env.FRONTEND_URL, 
+    process.env.FRONTEND_URL,
     "https://for-everyone-blogs.vercel.app",
     "http://localhost:3000",
     "http://localhost:5173",
-    "https://for-everyone-blogs.onrender.com/"
   ];
-  
+
   const origin = req.headers.origin;
-  
+
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   } else {
-    // Allow any origin as fallback
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Origin", origin || "*");
   }
-  
+
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  
-  // Handle preflight requests
+
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
-  
+
   next();
 });
+
 
 // Add OPTIONS handling for preflight requests
 server.options('*', (req, res) => {
