@@ -13,6 +13,8 @@ const HomePage = () => {
   const [blogs, setBlogs] = useState(null);
   const [trendingBlogs, setTrendingBlogs] = useState(null);
   const [pageState, setPageState] = useState("home");
+  const [totalBlogs, setTotalBlogs] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const categories = [
     "programming",
@@ -27,48 +29,38 @@ const HomePage = () => {
 
   const fetchLatestBlogs = async (page = 1) => {
     try {
-      const { data } = await axios.post(
+      const res = await axios.post(
         `${import.meta.env.VITE_SERVER_DOMAIN}/latest-blogs`,
         { page }
       );
 
       // Debug logs
-      console.log("Raw API response:", data);
-      if (data.blogs?.[0]) {
-        console.log("First blog author data:", data.blogs[0].author);
-        console.log("First blog personal info:", data.blogs[0].author?.personal_info);
+      console.log("Raw API response:", res.data);
+      if (res.data.blogs?.[0]) {
+        console.log("First blog author data:", res.data.blogs[0].author);
+        console.log("First blog personal info:", res.data.blogs[0].author?.personal_info);
       }
 
-      if (!data?.blogs) {
-        console.error("Invalid blogs data:", data);
+      if (!res.data?.blogs) {
+        console.error("Invalid blogs data:", res.data);
         return;
       }
 
-      // Process the blogs data to ensure author information is properly structured
-      const processedBlogs = data.blogs.map(blog => ({
+      const processedBlogs = res.data.blogs.map(blog => ({
         ...blog,
         author: {
           personal_info: {
-            fullname: blog.author?.personal_info?.fullname || "Unknown Author",
-            username: blog.author?.personal_info?.username || "unknown",
-            profile_img: blog.author?.personal_info?.profile_img || "/default-profile.png",
+            ...blog.author.personal_info
           }
         }
       }));
 
-      const formattedData = await filterPaginationData({
-        state: blogs,
-        data: processedBlogs,
-        page,
-        countRoute: "/all-latest-blogs-count",
-      });
-
-      console.log("Formatted blog data:", formattedData);
-      console.log("First formatted blog author:", formattedData?.results?.[0]?.author);
-      
-      setBlogs(formattedData);
-    } catch (err) {
-      console.error("Error fetching latest blogs:", err);
+      setBlogs(prev => [...prev, ...processedBlogs]);
+      setTotalBlogs(res.data.totalDocs);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching latest blogs:", error);
+      setLoading(false);
     }
   };
 

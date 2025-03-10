@@ -72,6 +72,39 @@ After setting the environment variables, trigger a new deployment:
 
 ## Troubleshooting
 
+### 405 Method Not Allowed Errors
+
+If you're seeing "405 Method Not Allowed" errors when accessing API endpoints:
+
+1. **Check HTTP Methods**: Ensure that the frontend is using the correct HTTP method (GET, POST, etc.) that matches what the server expects. For example, if the server endpoint is defined with `server.post("/latest-blogs")`, the frontend should use `axios.post()` not `axios.get()`.
+
+2. **CORS Configuration**: Make sure your server has proper CORS configuration that allows the necessary HTTP methods. In `server.js`, ensure that:
+   ```javascript
+   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+   ```
+
+3. **Preflight Requests**: Add proper handling for OPTIONS preflight requests:
+   ```javascript
+   if (req.method === "OPTIONS") {
+     return res.status(200).end();
+   }
+   ```
+
+4. **Vercel Headers Configuration**: In your `vercel.json`, add headers configuration:
+   ```json
+   "headers": [
+     {
+       "source": "/(.*)",
+       "headers": [
+         { "key": "Access-Control-Allow-Credentials", "value": "true" },
+         { "key": "Access-Control-Allow-Origin", "value": "*" },
+         { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+         { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" }
+       ]
+     }
+   ]
+   ```
+
 ### 404 Not Found Errors
 
 If you're seeing 404 errors for the main page:
