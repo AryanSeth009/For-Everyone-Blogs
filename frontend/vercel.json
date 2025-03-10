@@ -1,5 +1,5 @@
 {
-  "buildCommand": "sh ./build.sh",
+  "buildCommand": "npm install --no-save vite && npx --yes vite build",
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
