@@ -11,7 +11,7 @@ if (!fs.existsSync(envProdPath)) {
   console.log('No .env.production file found, creating one...');
   fs.writeFileSync(
     envProdPath,
-    'VITE_SERVER_DOMAIN=https://for-everyone-blogs.vercel.app\n'
+    'VITE_SERVER_DOMAIN=https://for-everyone-blogs.onrender.com/\n'
   );
   console.log('.env.production file created successfully.');
 } else {
@@ -22,7 +22,7 @@ if (!fs.existsSync(envProdPath)) {
     console.log('Found placeholder in .env.production, updating...');
     const updatedContent = envContent.replace(
       /VITE_SERVER_DOMAIN=https:\/\/your-vercel-app-name\.vercel\.app/,
-      'VITE_SERVER_DOMAIN=https://for-everyone-blogs.vercel.app'
+      'VITE_SERVER_DOMAIN=https://for-everyone-blogs.onrender.com/'
     );
     fs.writeFileSync(envProdPath, updatedContent);
     console.log('.env.production updated successfully.');
@@ -32,7 +32,7 @@ if (!fs.existsSync(envProdPath)) {
 }
 
 // Ensure environment variable is set for the build process
-process.env.VITE_SERVER_DOMAIN = 'https://for-everyone-blogs.vercel.app';
+process.env.VITE_SERVER_DOMAIN = 'https://for-everyone-blogs.onrender.com/';
 
 console.log('Environment variables set:');
 console.log('VITE_SERVER_DOMAIN:', process.env.VITE_SERVER_DOMAIN);
