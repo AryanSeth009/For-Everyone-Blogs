@@ -1,18 +1,15 @@
 // Simple build script that uses the path to vite
-import { execSync } from 'child_process';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const { execSync } = require('child_process');
+const path = require('path');
 
 try {
   console.log('Starting Vite build process...');
   
-  // Get current directory
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
+  // No need to get current directory in CommonJS as __dirname is already available
   
   // Run the build using npx with the full path to node_modules/.bin/vite
   console.log('Running vite build...');
-  execSync('npx --no -- vite build', { 
+  execSync('npx --yes vite build', { 
     stdio: 'inherit',
     env: {
       ...process.env,
