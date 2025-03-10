@@ -77,12 +77,15 @@ server.use(express.json());
 // CORS configuration
 server.use(
   cors({
-    origin: process.env.NODE_ENV === "production" 
-      ? [process.env.FRONTEND_URL, "https://for-everyone-blogs.vercel.app"] 
-      : ["http://localhost:3000", "http://127.0.0.1:3000", "https://for-everyone-blogs.vercel.app"],
+    origin: ["https://for-everyone-blogs.vercel.app", "http://localhost:3000", "http://127.0.0.1:3000"],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
+
+// Add OPTIONS handling for preflight requests
+server.options('*', cors());
 
 // Comprehensive logging middleware
 server.use((req, res, next) => {
@@ -196,7 +199,7 @@ async function generateUploadURL() {
 };
 
 // Export the function so it can be used elsewhere
-module.exports = { generateUploadURL, server };
+module.exports = server;
 
 function verifyJWT(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -1801,6 +1804,3 @@ if (!process.env.VERCEL) {
     console.log(`Server running on port ${PORT}`);
   });
 }
-
-// Export for Vercel serverless functions
-module.exports = server;

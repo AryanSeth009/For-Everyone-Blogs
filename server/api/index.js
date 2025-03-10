@@ -1,5 +1,5 @@
 // Serverless entry point for Vercel
-const server = require('../server');
+const app = require('../server');
 
-// Export the Express server as a serverless function
-module.exports = server;
+// Export the Express app directly
+module.exports = app;

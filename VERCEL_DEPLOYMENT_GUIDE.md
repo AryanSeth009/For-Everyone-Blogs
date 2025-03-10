@@ -1,0 +1,133 @@
+# Vercel Deployment Guide for For-Everyone-Blogs
+
+This guide provides detailed instructions for deploying the For-Everyone-Blogs monorepo (frontend + backend) to Vercel.
+
+## Prerequisites
+
+- A Vercel account
+- Your For-Everyone-Blogs repository on GitHub/GitLab/Bitbucket
+- MongoDB Atlas database
+
+## Step 1: Prepare Your Project
+
+Ensure your project has the following configuration files:
+
+1. **Root `vercel.json`**:
+   ```json
+   {
+     "version": 2,
+     "builds": [
+       {
+         "src": "server/vercel.js",
+         "use": "@vercel/node"
+       },
+       {
+         "src": "frontend/package.json",
+         "use": "@vercel/static-build",
+         "config": {
+           "distDir": "dist"
+         }
+       }
+     ],
+     "routes": [
+       {
+         "src": "/api/(.*)",
+         "dest": "server/vercel.js"
+       },
+       {
+         "src": "/(latest-blogs|trending-blogs|search-blogs|get-blog|get-profile|get-upload-url|user-written-blogs|notifications|search-users|update-profile|update-profile-img|change-password|add-comment|delete-comment|like-blog|isliked-by-user|create-blog|delete-blog|new-notification|get-blog-comments)(.*)",
+         "dest": "server/vercel.js"
+       },
+       {
+         "src": "/(.*)",
+         "dest": "frontend/dist/$1",
+         "continue": true
+       },
+       {
+         "src": "/(.*)",
+         "dest": "frontend/dist/index.html"
+       }
+     ]
+   }
+   ```
+
+2. **Frontend `.env.production`**:
+   ```
+   VITE_SERVER_DOMAIN=https://your-vercel-app-name.vercel.app
+   ```
+
+3. **Server `vercel.js`**:
+   ```javascript
+   // Vercel serverless entry point
+   const server = require('./server');
+
+   // Export the Express app directly
+   module.exports = server;
+   ```
+
+## Step 2: Deploy to Vercel
+
+1. Push your code to your Git repository
+2. Go to [Vercel](https://vercel.com) and sign in
+3. Click "Add New" > "Project"
+4. Import your Git repository
+5. Configure the project:
+   - Framework Preset: Other
+   - Root Directory: ./
+   - Build Command: npm run build
+   - Output Directory: frontend/dist
+   - Install Command: npm install
+
+## Step 3: Set Environment Variables
+
+In the Vercel project settings, add these environment variables:
+
+- `MONGO_URI`: Your MongoDB connection string
+- `DB_LOCATION`: Same as MONGO_URI
+- `FRONTEND_URL`: Your Vercel app URL (e.g., https://your-app.vercel.app)
+- `FIREBASE_PRIVATE_KEY`: Your Firebase private key
+- `NODE_ENV`: production
+
+## Step 4: Redeploy
+
+After setting the environment variables, trigger a new deployment:
+
+1. Go to the Deployments tab
+2. Click "Redeploy" on your latest deployment
+
+## Troubleshooting
+
+### API Connection Issues
+
+If your frontend can't connect to the backend:
+
+1. Check that the `VITE_SERVER_DOMAIN` in `.env.production` matches your Vercel app URL
+2. Verify that the API routes in `vercel.json` include all the endpoints your app needs
+3. Check the Vercel logs for any errors
+4. Make sure CORS is properly configured in your server.js file
+
+### Build Errors
+
+If you encounter build errors:
+
+1. Check that all dependencies are correctly installed
+2. Verify that your package.json scripts are correct
+3. Check the Vercel build logs for specific errors
+
+## Local Development
+
+For local development, continue using:
+
+```bash
+# Start the frontend
+npm run dev:frontend
+
+# Start the backend
+npm run dev:server
+```
+
+## Important Notes
+
+1. The server must export the Express app directly, not as a property of an object
+2. All API routes must be explicitly listed in the vercel.json file
+3. The frontend must use the correct server domain in production
