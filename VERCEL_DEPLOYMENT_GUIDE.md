@@ -70,6 +70,39 @@ After setting the environment variables, trigger a new deployment:
 1. Go to the Deployments tab
 2. Click "Redeploy" on your latest deployment
 
+## Setting Up Environment Variables in Vercel
+
+For your application to work correctly in production, you need to set up environment variables in the Vercel dashboard:
+
+1. **Log in to your Vercel dashboard** at [vercel.com](https://vercel.com)
+
+2. **Select your project** (For-Everyone-Blogs)
+
+3. **Navigate to Settings**:
+   - Click on the "Settings" tab in the top navigation bar
+
+4. **Go to Environment Variables**:
+   - In the left sidebar, click on "Environment Variables"
+
+5. **Add the following environment variables**:
+
+   | Name | Value | Environments |
+   |------|-------|--------------|
+   | `VITE_SERVER_DOMAIN` | `https://for-everyone-blogs.vercel.app` | Production, Preview, Development |
+   | `FRONTEND_URL` | `https://for-everyone-blogs.vercel.app` | Production, Preview, Development |
+   | `MONGODB_URL` | `your-mongodb-connection-string` | Production, Preview, Development |
+   | `JWT_SECRET` | `your-jwt-secret` | Production, Preview, Development |
+
+6. **Click "Save"** to apply these environment variables
+
+7. **Redeploy your application**:
+   - Go to the "Deployments" tab
+   - Find your latest deployment
+   - Click the three dots menu (⋮)
+   - Select "Redeploy"
+
+This step is critical because the frontend needs to know the correct URL to connect to the backend API. If this environment variable is not set correctly, you'll see CORS errors and the application won't function properly.
+
 ## Troubleshooting
 
 ### CORS and HTTP Method Issues
