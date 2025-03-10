@@ -1,5 +1,7 @@
 {
-  "framework": "vite",
+  "buildCommand": "npm run vercel-build",
+  "installCommand": "npm install",
+  "framework": null,
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
