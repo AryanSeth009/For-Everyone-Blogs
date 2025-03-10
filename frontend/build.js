@@ -1,11 +1,13 @@
 // Simple build script that uses the path to vite
 const { execSync } = require('child_process');
 const path = require('path');
+const os = require('os');
 
 try {
   console.log('Starting Vite build process...');
   
-  // No need to get current directory in CommonJS as __dirname is already available
+  // Determine path separator based on OS
+  const pathSeparator = os.platform() === 'win32' ? ';' : ':';
   
   // Run the build using npx with the full path to node_modules/.bin/vite
   console.log('Running vite build...');
@@ -13,7 +15,7 @@ try {
     stdio: 'inherit',
     env: {
       ...process.env,
-      PATH: `${path.resolve(__dirname, 'node_modules', '.bin')}:${process.env.PATH}`
+      PATH: `${path.resolve(__dirname, 'node_modules', '.bin')}${pathSeparator}${process.env.PATH}`
     }
   });
   

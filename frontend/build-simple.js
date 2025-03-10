@@ -12,7 +12,7 @@ try {
   
   if (!viteExists) {
     console.log('Vite not found in node_modules, installing...');
-    execSync('npm install --no-save vite@4.4.5', { stdio: 'inherit' });
+    execSync('npm install --no-save vite@4.5.9', { stdio: 'inherit' });
   }
   
   // Run the build command
@@ -21,16 +21,31 @@ try {
   // Try different approaches to run Vite
   try {
     // Approach 1: Use direct path to vite binary
-    execSync(`${path.join(__dirname, 'node_modules', '.bin', 'vite')} build`, { 
+    const viteBinPath = path.join(__dirname, 'node_modules', '.bin', 'vite');
+    console.log(`Using Vite binary at: ${viteBinPath}`);
+    execSync(`"${viteBinPath}" build`, { 
       stdio: 'inherit' 
     });
   } catch (err) {
     console.log('First approach failed, trying alternative...');
+    console.error(err);
     
-    // Approach 2: Use node to run vite.js directly
-    execSync(`node ${path.join(__dirname, 'node_modules', 'vite', 'bin', 'vite.js')} build`, { 
-      stdio: 'inherit' 
-    });
+    try {
+      // Approach 2: Use node to run vite.js directly
+      const viteJsPath = path.join(__dirname, 'node_modules', 'vite', 'bin', 'vite.js');
+      console.log(`Using Vite.js at: ${viteJsPath}`);
+      execSync(`node "${viteJsPath}" build`, { 
+        stdio: 'inherit' 
+      });
+    } catch (err2) {
+      console.log('Second approach failed, trying with npx...');
+      console.error(err2);
+      
+      // Approach 3: Use npx as a last resort
+      execSync('npx --yes vite@4.5.9 build', { 
+        stdio: 'inherit' 
+      });
+    }
   }
   
   console.log('Build completed successfully!');
