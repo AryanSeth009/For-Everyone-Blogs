@@ -1796,6 +1796,11 @@ server.get("/check-blog-author/:blog_id", async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (!process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+// Export for Vercel serverless functions
+module.exports = server;
