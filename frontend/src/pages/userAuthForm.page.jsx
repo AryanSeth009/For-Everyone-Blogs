@@ -28,44 +28,37 @@ const UserAuthForm = ({ type }) => {
     }
 
     const handleSubmit = (e) => {
-
         e.preventDefault();
-
-        let serverRoute = type == "sign-in" ? "/signin" : "/signup";
-
-        let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
-        let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
-
-        // formData
-        let form = new FormData(formElement);
+    
+        let form = new FormData(e.target);  // Corrected this line
+        let serverRoute = type === "sign-in" ? "/signin" : "/signup";
+    
+        let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
+    
         let formData = {};
-
         for(let [key, value] of form.entries()){
             formData[key] = value;
         }
-
+    
         let { fullname, email, password } = formData;
-
-        // form validation
-
-        if(fullname){
-            if(fullname.length < 3){
-                return toast.error("Fullname must be at least 3 letters long")
-           }
+    
+        // Form Validation
+        if(fullname && fullname.length < 3){
+            return toast.error("Fullname must be at least 3 letters long");
         }
-       if(!email.length){
-            return toast.error("Enter Email" )
-       }
-       if(!emailRegex.test(email)){
-            return toast.error("Email is invalid" )
-       }
-       if(!passwordRegex.test(password)){
-            return toast.error("Password should be 6 to 20 characters long with a numeric, 1 lowercase and 1 uppercase letters")
-       }
-
-       userAuthThroughServer(serverRoute, formData)
-
+        if(!email || !emailRegex.test(email)){
+            return toast.error("Invalid email format");
+        }
+        if(!password || !passwordRegex.test(password)){
+            return toast.error("Password should be 6 to 20 characters long with a numeric, 1 lowercase and 1 uppercase letters");
+        }
+    
+        console.log("Sending formData:", formData); // Log the form data to check before sending
+    
+        userAuthThroughServer(serverRoute, formData);
     }
+    
 
     const handleGoogleAuth = (e) => {
 
