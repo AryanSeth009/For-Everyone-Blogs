@@ -42,24 +42,26 @@ const PORT = process.env.PORT || 3000;
 
 // Initialize Firebase Admin SDK
 const serviceAccount = {
-  "type": "service_account",
-  "project_id": "blogging-website-1979c",
-  "private_key_id": "06ff0653d17767cc1b025afaee9441ae9c0d2317",
-  "private_key": process.env.FIREBASE_PRIVATE_KEY ? 
-    process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : 
-    "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDy+CEbQtZ8dFHz\nyPHqfGOT/BPscjJLntqE+wzGvmZdh3c5GHkf/nvzEuWLp0ILHlGowl1LHGxU9dxN\nzbACc0ExCW+hUs+ZOtAguMWBuEPhYq+Xb4gm3bv6t8RJDV8wUTBojyu9QcSmSCNx\nwYjdjHpM5ZTtxQ9V8cC0+7l1hY2mb7sFpcDjhlY7XBhvossKORr2oEPXvAdHMnsL\noc9Z+uQmfVjZgdBdjsStS1yg7vwyu5YqhIaMtv6i600njz2dXYBM1p4uCpMfyJ5o\nG0t68gV69ysyaEXpzMEQbUqFis2IOJ1mONFQlT49WsTbTgDkOCPTO95wcezT5NJ8\nBGbhlMqnAgMBAAECggEAKckgsHaLOrYqjfmmGUSxP3cf2g89tSGpxSsD5H5ETpuI\nloot8qGqoYBDeAQY6J6bPqHGt684tlfePoc8WP+HW66awyzhxSGHP8lnNksBaZa2\nSh4FVWHW/WRzXnjtQPsFj0XoKNFRx6MqbVrydd+9/NGTDl1QqOA92yJbn+mLFe9V\nddFBNGCMwQd1qYVFHhVotR1UMQnq63q1D/7kZT7kDG7AX2VXZ40Npg/bEqbnJUgC\np0Sm1TtP8sScVtcT0tpkvQrqbRSj+R6xXJxnjcf6Ym45+RSWXygTyyY8QMQNr713\n8OdG51DEub6t2/84F8ZgBKV5BmtyJV2D8eF7S5UHWQKBgQD+2fq/vNWtaT+gGM/1\nUdlfxpP3SpKAZkB13DkutX3ACjInqkVkZgtCCqx4q7uV3JXn1szqlrPbxeit7F5h\nAQro24Ib6J2gBO0boR2keFulf+k3KnnJ18eNflcc0pobmHU0sgFA90lP1yY5RScp\ngWXIFVU1mVS2sKbcKsjO04VbhQKBgQD0EHD+nZlaT5i30qhBgkJeKlihiSO2lwuV\nPSDj9hFn5uZOARERHd2nfv621oQPC7Cea+ZZwTk8Hlfif1Ik6H9kJX+tCkdtIBye\nWBxJ55eTMIe1leYX3aIyKEPvtvnoBXNrpfK/VDGPclMr7RK8+IN1Ina2vkFV06mv\nAv+9pMzXOwKBgG4aisSvtrlW0VA/qAjatck1J9Qc+bJTeuHwpRvS+WMwhH6yh4xa\nsd50chMoTsDuLi2dlaZ8OXRnyqDpj9Tk+Gul+k5Ib2Ek/7OCJiZagW29F2roBPn5\nKZOt08D2E/J8KZb8mKIStC+0SiVQBR1fdDO/U7L2ba0IIO7Z5SvGIsVpAoGBAL9I\nc4bateoWIDdSHxTYpnNu9PAFr7vXPfjFZBXGMXYhfbb9Fwc3RRWVbsSV9AJmwxIm\ntu75hYYcsfyOlS7gGZe/3AUe3UQlushPfjxeCmoNyw8CYMerqQduj3A9FDhIrWFd\nOpfBwOYQUCdJMzpv+3e+fxRSoJpHveGwlAdqNjEpAoGAZHVaqdAuY/pBkON7RNib\nEPRwrR/5v1hjcZ3tDKKb7RdPnOrExKWz+liMju2i1DoVKo2ngibb13e3xhl5dRNE\n5kwK5e4Yv5LljFuIMJZGk+uYpxcLvRdNmQfelq4RIhjjKU3E1iSVi5u9inSnrOHG\nrZwSrjwMDT4y9KxNLhuwtzo=\n-----END PRIVATE KEY-----\n",
-  "client_email": "firebase-adminsdk-fbsvc@blogging-website-1979c.iam.gserviceaccount.com",
-  "client_id": "118214452274419501524",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40blogging-website-1979c.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
+  type: "service_account",
+  project_id: "blogging-website-1979c",
+  private_key_id: "06ff0653d17767cc1b025afaee9441ae9c0d2317",
+  private_key: process.env.FIREBASE_PRIVATE_KEY
+    ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
+    : "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDy+CEbQtZ8dFHz\nyPHqfGOT/BPscjJLntqE+wzGvmZdh3c5GHkf/nvzEuWLp0ILHlGowl1LHGxU9dxN\nzbACc0ExCW+hUs+ZOtAguMWBuEPhYq+Xb4gm3bv6t8RJDV8wUTBojyu9QcSmSCNx\nwYjdjHpM5ZTtxQ9V8cC0+7l1hY2mb7sFpcDjhlY7XBhvossKORr2oEPXvAdHMnsL\noc9Z+uQmfVjZgdBdjsStS1yg7vwyu5YqhIaMtv6i600njz2dXYBM1p4uCpMfyJ5o\nG0t68gV69ysyaEXpzMEQbUqFis2IOJ1mONFQlT49WsTbTgDkOCPTO95wcezT5NJ8\nBGbhlMqnAgMBAAECggEAKckgsHaLOrYqjfmmGUSxP3cf2g89tSGpxSsD5H5ETpuI\nloot8qGqoYBDeAQY6J6bPqHGt684tlfePoc8WP+HW66awyzhxSGHP8lnNksBaZa2\nSh4FVWHW/WRzXnjtQPsFj0XoKNFRx6MqbVrydd+9/NGTDl1QqOA92yJbn+mLFe9V\nddFBNGCMwQd1qYVFHhVotR1UMQnq63q1D/7kZT7kDG7AX2VXZ40Npg/bEqbnJUgC\np0Sm1TtP8sScVtcT0tpkvQrqbRSj+R6xXJxnjcf6Ym45+RSWXygTyyY8QMQNr713\n8OdG51DEub6t2/84F8ZgBKV5BmtyJV2D8eF7S5UHWQKBgQD+2fq/vNWtaT+gGM/1\nUdlfxpP3SpKAZkB13DkutX3ACjInqkVkZgtCCqx4q7uV3JXn1szqlrPbxeit7F5h\nAQro24Ib6J2gBO0boR2keFulf+k3KnnJ18eNflcc0pobmHU0sgFA90lP1yY5RScp\ngWXIFVU1mVS2sKbcKsjO04VbhQKBgQD0EHD+nZlaT5i30qhBgkJeKlihiSO2lwuV\nPSDj9hFn5uZOARERHd2nfv621oQPC7Cea+ZZwTk8Hlfif1Ik6H9kJX+tCkdtIBye\nWBxJ55eTMIe1leYX3aIyKEPvtvnoBXNrpfK/VDGPclMr7RK8+IN1Ina2vkFV06mv\nAv+9pMzXOwKBgG4aisSvtrlW0VA/qAjatck1J9Qc+bJTeuHwpRvS+WMwhH6yh4xa\nsd50chMoTsDuLi2dlaZ8OXRnyqDpj9Tk+Gul+k5Ib2Ek/7OCJiZagW29F2roBPn5\nKZOt08D2E/J8KZb8mKIStC+0SiVQBR1fdDO/U7L2ba0IIO7Z5SvGIsVpAoGBAL9I\nc4bateoWIDdSHxTYpnNu9PAFr7vXPfjFZBXGMXYhfbb9Fwc3RRWVbsSV9AJmwxIm\ntu75hYYcsfyOlS7gGZe/3AUe3UQlushPfjxeCmoNyw8CYMerqQduj3A9FDhIrWFd\nOpfBwOYQUCdJMzpv+3e+fxRSoJpHveGwlAdqNjEpAoGAZHVaqdAuY/pBkON7RNib\nEPRwrR/5v1hjcZ3tDKKb7RdPnOrExKWz+liMju2i1DoVKo2ngibb13e3xhl5dRNE\n5kwK5e4Yv5LljFuIMJZGk+uYpxcLvRdNmQfelq4RIhjjKU3E1iSVi5u9inSnrOHG\nrZwSrjwMDT4y9KxNLhuwtzo=\n-----END PRIVATE KEY-----\n",
+  client_email:
+    "firebase-adminsdk-fbsvc@blogging-website-1979c.iam.gserviceaccount.com",
+  client_id: "118214452274419501524",
+  auth_uri: "https://accounts.google.com/o/oauth2/auth",
+  token_uri: "https://oauth2.googleapis.com/token",
+  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+  client_x509_cert_url:
+    "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40blogging-website-1979c.iam.gserviceaccount.com",
+  universe_domain: "googleapis.com",
 };
 
 // Initialize Firebase
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
 // yaaha sai alag h
@@ -69,45 +71,45 @@ let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for pass
 server.use(express.static(buildPath));
 
 server.get("/*", (req, res) => {
-    res.sendFile(path.join(buildPath, "index.html"));
+  res.sendFile(path.join(buildPath, "index.html"));
 });
 
 // CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      process.env.FRONTEND_URL || 'https://for-everyone-blogs.vercel.app',
-      'https://for-everyone-blogs.vercel.app',
-      'https://for-everyone-blogs.onrender.com',
-      'http://localhost:3000',
-      'http://localhost:5173'
+      process.env.FRONTEND_URL || "https://for-everyone-blogs.vercel.app",
+      "https://for-everyone-blogs.vercel.app",
+      "https://for-everyone-blogs.onrender.com",
+      "http://localhost:3000",
+      "http://localhost:5173",
     ].filter(Boolean); // Remove any undefined values
 
-    console.log('Incoming request from origin:', origin);
-    console.log('Allowed origins:', allowedOrigins);
-    
+    console.log("Incoming request from origin:", origin);
+    console.log("Allowed origins:", allowedOrigins);
+
     if (!origin || allowedOrigins.includes(origin)) {
       // Set the specific origin that matched
       const allowedOrigin = origin || allowedOrigins[0];
       callback(null, true);
     } else {
-      console.log('Origin not allowed:', origin);
-      callback(new Error('Not allowed by CORS'));
+      console.log("Origin not allowed:", origin);
+      callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['Access-Control-Allow-Origin'],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  exposedHeaders: ["Access-Control-Allow-Origin"],
   preflightContinue: false,
-  optionsSuccessStatus: 204
+  optionsSuccessStatus: 204,
 };
 
 // Apply CORS middleware before any routes
 server.use(cors(corsOptions));
 
 // Handle preflight requests explicitly
-server.options('*', cors(corsOptions));
+server.options("*", cors(corsOptions));
 
 // Parse JSON bodies
 server.use(express.json());
@@ -119,37 +121,46 @@ server.get("/health", (req, res) => {
 
 // Add trending-blogs endpoint with proper error handling
 server.get("/trending-blogs", async (req, res) => {
-    const origin = req.headers.origin;
-    console.log("Received request for trending blogs from origin:", origin);
-    
-    try {
-        const trendingBlogs = await Blog.find({ draft: false })
-            .sort({ "activity.total_reads": -1, "activity.total_likes": -1, publishedAt: -1 })
-            .limit(5)
-            .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
-            .lean();
+  const origin = req.headers.origin;
+  console.log("Received request for trending blogs from origin:", origin);
 
-        if (!trendingBlogs) {
-            console.log("No trending blogs found");
-            return res.status(200).json({ 
-                blogs: [],
-                totalDocs: 0,
-                page: 1,
-                hasMore: false
-            });
-        }
+  try {
+    const trendingBlogs = await Blog.find({ draft: false })
+      .sort({
+        "activity.total_reads": -1,
+        "activity.total_likes": -1,
+        publishedAt: -1,
+      })
+      .limit(5)
+      .populate(
+        "author",
+        "personal_info.fullname personal_info.username personal_info.profile_img"
+      )
+      .lean();
 
-        console.log("Sending trending blogs response:", { count: trendingBlogs.length });
-        return res.status(200).json({ 
-            blogs: trendingBlogs,
-            totalDocs: trendingBlogs.length,
-            page: 1,
-            hasMore: false
-        });
-    } catch (err) {
-        console.error("Error in trending-blogs:", err);
-        return res.status(500).json({ error: "Internal server error" });
+    if (!trendingBlogs) {
+      console.log("No trending blogs found");
+      return res.status(200).json({
+        blogs: [],
+        totalDocs: 0,
+        page: 1,
+        hasMore: false,
+      });
     }
+
+    console.log("Sending trending blogs response:", {
+      count: trendingBlogs.length,
+    });
+    return res.status(200).json({
+      blogs: trendingBlogs,
+      totalDocs: trendingBlogs.length,
+      page: 1,
+      hasMore: false,
+    });
+  } catch (err) {
+    console.error("Error in trending-blogs:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // Comprehensive logging middleware
@@ -202,7 +213,7 @@ async function fixAllBlogsAuthors() {
   } catch (err) {
     console.error("Error fixing blog authors:", err);
   }
-};
+}
 
 // Add this function at the top level
 async function fixUsersWithNullEmails() {
@@ -227,15 +238,15 @@ async function fixUsersWithNullEmails() {
   } catch (err) {
     console.error("Error fixing users:", err);
   }
-};
+}
 
 // Update the MongoDB connection to call this function
 
 // setting up s3 bucket
 // // Make sure to import AWS and nanoid at the top of your file
 // // Using dynamic import for aws-sdk to make it compatible with ES modules
-// 
-// 
+//
+//
 // // // // const AWS = require("aws-sdk");
 
 // Configure AWS S3
@@ -250,18 +261,18 @@ async function generateUploadURL() {
   console.log("S3 upload functionality is disabled");
   const date = new Date();
   const imageName = nanoid() + "-" + date.getTime() + ".jpeg";
-  
+
   // Return a placeholder URL
   return "/placeholder-upload-url/" + imageName;
-  
+
   // Original S3 code:
   // return await s3.getSignedUrlPromise("putObject", {
-//   //   Bucket: process.env.AWS_BUCKET_NAME,
+  //   //   Bucket: process.env.AWS_BUCKET_NAME,
   //   Key: imageName,
   //   Expires: 1000,
   //   ContentType: "image/jpeg",
   // });
-};
+}
 
 // Export the function so it can be used elsewhere
 module.exports = server;
@@ -284,7 +295,7 @@ function verifyJWT(req, res, next) {
 
     next();
   });
-};
+}
 
 function formatDatatoSend(user) {
   const access_token = jwt.sign(
@@ -298,7 +309,7 @@ function formatDatatoSend(user) {
     username: user.personal_info.username,
     fullname: user.personal_info.fullname,
   };
-};
+}
 
 async function generateUsername(email) {
   let username = email.split("@")[0];
@@ -312,7 +323,7 @@ async function generateUsername(email) {
   }
 
   return username;
-};
+}
 
 // upload image url route
 server.get("/get-upload-url", async (req, res) => {
@@ -340,6 +351,17 @@ server.post("/signup", async (req, res) => {
       return res.status(409).json({ error: "Email already in use" });
     }
 
+    // Generate random profile image
+    const randomName =
+      profile_imgs_name_list[
+        Math.floor(Math.random() * profile_imgs_name_list.length)
+      ];
+    const randomCollection =
+      profile_imgs_collections_list[
+        Math.floor(Math.random() * profile_imgs_collections_list.length)
+      ];
+    const profileImageUrl = `https://api.dicebear.com/6.x/${randomCollection}/svg?seed=${randomName}`;
+
     // Rest of your signup logic...
     const username = await generateUsername(email);
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -350,8 +372,7 @@ server.post("/signup", async (req, res) => {
         email,
         password: hashedPassword,
         username,
-        profile_img:
-          "https://png.pngtree.com/png-vector/20191009/ourmid/pngtree-user-icon-png-image_1796659.jpg",
+        profile_img: profileImageUrl,
       },
       google_auth: false,
       blogs: [],
@@ -418,7 +439,21 @@ server.post("/google-auth", async (req, res) => {
     .then(async (decodedUser) => {
       let { email, name, picture } = decodedUser;
 
-      picture = picture.replace("s96-c", "s384-c");
+      // If Google profile picture exists, use a larger version
+      if (picture) {
+        picture = picture.replace("s96-c", "s384-c");
+      } else {
+        // Generate random profile image if no Google profile picture
+        const randomName =
+          profile_imgs_name_list[
+            Math.floor(Math.random() * profile_imgs_name_list.length)
+          ];
+        const randomCollection =
+          profile_imgs_collections_list[
+            Math.floor(Math.random() * profile_imgs_collections_list.length)
+          ];
+        picture = `https://api.dicebear.com/6.x/${randomCollection}/svg?seed=${randomName}`;
+      }
 
       let user = await User.findOne({ "personal_info.email": email })
         .select(
@@ -441,11 +476,15 @@ server.post("/google-auth", async (req, res) => {
         }
       } else {
         // sign up
-
         let username = await generateUsername(email);
 
         user = new User({
-          personal_info: { fullname: name, email, username },
+          personal_info: {
+            fullname: name,
+            email,
+            username,
+            profile_img: picture,
+          },
           google_auth: true,
         });
 
@@ -534,37 +573,44 @@ server.post("/change-password", verifyJWT, async (req, res) => {
 
 server.all("/latest-blogs", async (req, res) => {
   console.log(`Received ${req.method} request to /latest-blogs`);
-  console.log('Request body:', req.body);
+  console.log("Request body:", req.body);
   try {
     // Get page from either query params (GET) or request body (POST)
-    let { page = 1 } = req.method === 'POST' ? req.body : req.query;
+    let { page = 1 } = req.method === "POST" ? req.body : req.query;
     page = parseInt(page);
-    
+
     const maxLimit = 5;
     const skipCount = (page - 1) * maxLimit;
 
     // Log request details
-    console.log(`Processing ${req.method} request to /latest-blogs with page: ${page}`);
-    
+    console.log(
+      `Processing ${req.method} request to /latest-blogs with page: ${page}`
+    );
+
     // Get total document count
     const totalDocs = await Blog.countDocuments({ draft: false });
-    
+
     // Get blogs with pagination
     const blogs = await Blog.find({ draft: false })
-        .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
-        .sort({ publishedAt: -1 })
-        .skip(skipCount)
-        .limit(maxLimit)
-        .select("blog_id title description content banner activity tags publishedAt author");
-    
+      .populate(
+        "author",
+        "personal_info.fullname personal_info.username personal_info.profile_img"
+      )
+      .sort({ publishedAt: -1 })
+      .skip(skipCount)
+      .limit(maxLimit)
+      .select(
+        "blog_id title description content banner activity tags publishedAt author"
+      );
+
     console.log(`Found ${blogs.length} blogs for page ${page}`);
-    
+
     // Return response
-    return res.status(200).json({ 
-        blogs, 
-        totalDocs,
-        page,
-        hasMore: totalDocs > skipCount + blogs.length
+    return res.status(200).json({
+      blogs,
+      totalDocs,
+      page,
+      hasMore: totalDocs > skipCount + blogs.length,
     });
   } catch (err) {
     console.error("Error in latest-blogs:", err);
@@ -585,11 +631,20 @@ server.all("/all-latest-blogs-count", async (req, res) => {
 server.all("/trending-blogs", async (req, res) => {
   try {
     const trendingBlogs = await Blog.find({ draft: false })
-        .sort({ "activity.total_reads": -1, "activity.total_likes": -1, publishedAt: -1 })
-        .select("title banner activity tags publishedAt blog_id author.personal_info.fullname author.personal_info.username author.personal_info.profile_img")
-        .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
-        .limit(5)
-        .lean();
+      .sort({
+        "activity.total_reads": -1,
+        "activity.total_likes": -1,
+        publishedAt: -1,
+      })
+      .select(
+        "title banner activity tags publishedAt blog_id author.personal_info.fullname author.personal_info.username author.personal_info.profile_img"
+      )
+      .populate(
+        "author",
+        "personal_info.fullname personal_info.username personal_info.profile_img"
+      )
+      .limit(5)
+      .lean();
 
     console.log("Trending blogs response:", { blogs: trendingBlogs });
     return res.status(200).json({ blogs: trendingBlogs });
@@ -600,37 +655,37 @@ server.all("/trending-blogs", async (req, res) => {
 });
 
 server.post("/search-blogs", async (req, res) => {
-    console.log(`Received POST request to /search-blogs`);
-    console.log('Request body:', req.body);
-    let { tag, query, author, page, limit, eliminate_blog } = req.body;
+  console.log(`Received POST request to /search-blogs`);
+  console.log("Request body:", req.body);
+  let { tag, query, author, page, limit, eliminate_blog } = req.body;
 
-    let findQuery;
+  let findQuery;
 
-    if (tag) {
-      findQuery = { tags: tag, draft: false, blog_id: { $ne: eliminate_blog } };
-    } else if (query) {
-      findQuery = { draft: false, title: new RegExp(query, "i") };
-    } else if (author) {
-      findQuery = { author, draft: false };
-    }
+  if (tag) {
+    findQuery = { tags: tag, draft: false, blog_id: { $ne: eliminate_blog } };
+  } else if (query) {
+    findQuery = { draft: false, title: new RegExp(query, "i") };
+  } else if (author) {
+    findQuery = { author, draft: false };
+  }
 
-    let maxLimit = limit ? limit : 2;
+  let maxLimit = limit ? limit : 2;
 
-    Blog.find(findQuery)
-      .populate(
-        "author",
-        "personal_info.profile_img personal_info.username personal_info.fullname -_id"
-      )
-      .sort({ publishedAt: -1 })
-      .select("blog_id title des banner activity tags publishedAt -_id ")
-      .skip((page - 1) * maxLimit)
-      .limit(maxLimit)
-      .then((blogs) => {
-        return res.status(200).json({ blogs });
-      })
-      .catch((err) => {
-        return res.status(500).json({ error: err.message });
-      });
+  Blog.find(findQuery)
+    .populate(
+      "author",
+      "personal_info.profile_img personal_info.username personal_info.fullname -_id"
+    )
+    .sort({ publishedAt: -1 })
+    .select("blog_id title des banner activity tags publishedAt -_id ")
+    .skip((page - 1) * maxLimit)
+    .limit(maxLimit)
+    .then((blogs) => {
+      return res.status(200).json({ blogs });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.message });
+    });
 });
 
 server.post("/search-blogs-count", async (req, res) => {
@@ -1137,7 +1192,7 @@ async function deleteComments(_id) {
     .catch((err) => {
       console.log(err.message);
     });
-};
+}
 
 server.post("/delete-comment", verifyJWT, async (req, res) => {
   let user_id = req.user;
@@ -1392,7 +1447,8 @@ server.get("/debug-fix-authors", async (req, res) => {
     const verifyBlogs = await Blog.find({})
       .populate({
         path: "author",
-        select: "personal_info.fullname personal_info.username personal_info.profile_img",
+        select:
+          "personal_info.fullname personal_info.username personal_info.profile_img",
       })
       .lean();
 
