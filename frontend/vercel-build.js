@@ -1,14 +1,21 @@
-import { execSync } from "child_process";
+const { execSync } = require("child_process");
 
 try {
-  // Install dependencies
-  console.log("Installing dependencies...");
-  execSync("npm install @vitejs/plugin-react --save-dev", { stdio: "inherit" });
-  console.log("@vitejs/plugin-react installed");
+  // First ensure all dependencies are installed
+  console.log("Installing all dependencies...");
+  execSync("npm install", { stdio: "inherit" });
+  console.log("All dependencies installed");
+
+  // Specifically ensure vite and @vitejs/plugin-react are installed
+  console.log("Ensuring Vite dependencies...");
+  execSync("npm install vite @vitejs/plugin-react --save-dev", {
+    stdio: "inherit",
+  });
+  console.log("Vite dependencies confirmed");
 
   // Run the build
   console.log("Running build...");
-  execSync("vite build", { stdio: "inherit" });
+  execSync("npx vite build", { stdio: "inherit" });
   console.log("Build complete");
 } catch (error) {
   console.error("Build failed:", error);
